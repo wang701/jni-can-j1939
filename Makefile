@@ -29,7 +29,7 @@ CXXFLAGS=-I./include -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions \
 -fstack-protector --param=ssp-buffer-size=4 -fPIC -Wno-unused-parameter \
 -pedantic -D_REENTRANT -D_GNU_SOURCE \
 $(JAVA_INCLUDES)
-SONAME=isoblue
+SONAME=j1939
 LDFLAGS=-Wl,-soname,$(SONAME)
 
 .DEFAULT_GOAL := all
@@ -78,4 +78,4 @@ stamps/create-jar: stamps/compile-jni $(JAR_MANIFEST_FILE)
 check: stamps/create-jar stamps/compile-test
 	$(JAVA) -ea -cp $(JAR_DEST_FILE):$(JAVA_TEST_DEST) \
 		-Xcheck:jni \
-		org.isoblue.can.CanSocketTest
+		org.isoblue.j1939.CanSocketTest

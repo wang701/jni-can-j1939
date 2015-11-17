@@ -19,7 +19,7 @@ import java.util.Set;
 
 public final class CanSocket implements Closeable {
     static {
-        final String LIB_CAN_INTERFACE = "isoblue";
+        final String LIB_CAN_INTERFACE = "j1939";
         try {
             System.loadLibrary(LIB_CAN_INTERFACE);
         } catch (final UnsatisfiedLinkError e) {
@@ -71,18 +71,18 @@ public final class CanSocket implements Closeable {
     
     private static native int _openSocketRAW() throws IOException;
     private static native int _openSocketBCM() throws IOException;
-    private static native int _openSocketISOBUS() throws IOException;
+    private static native int _openSocketJ1939() throws IOException;
     
-    private static native int _discoverInterfaceIndex(final int fd,
-            final String ifName) throws IOException;
-    private static native String _discoverInterfaceName(final int fd,
-            final int ifIndex) throws IOException;
-    
-    private static native void _bindToSocket(final int fd,
-            final int ifId) throws IOException;
-    private static native CanFrame _recvFrame(final int fd) throws IOException;
-    private static native void _sendFrame(final int fd, final int canif,
-            final int canid, final byte[] data) throws IOException;
+    private static native int _discoverInterfaceIndex(final int fd, final String ifName)
+	throws IOException;
+    private static native String _discoverInterfaceName(final int fd, final int ifIndex)
+	throws IOException;
+    private static native void _bindToSocket(final int fd, final int ifId)
+	throws IOException;
+    //private static native CanFrame _recvFrame(final int fd)
+	//throws IOException;
+    //private static native void _sendFrame(final int fd, final int canif,
+	//final int canid, final byte[] data) throws IOException;
     private static native void _close(final int fd) throws IOException;
     
     public final static class CanId implements Cloneable {
@@ -179,63 +179,63 @@ public final class CanSocket implements Closeable {
         }
     }
 
-    public final static class CanFrame implements Cloneable {
-        private final CanInterface canIf;
-        private final CanId canId;
-        private final byte[] data;
-        private final int pgn;
+    //public final static class CanFrame implements Cloneable {
+        //private final CanInterface canIf;
+        //private final CanId canId;
+        //private final byte[] data;
+        //private final int pgn;
         
-        public CanFrame(final CanInterface canIf, final CanId canId,
-                int pgn, byte[] data) {
-            this.canIf = canIf;
-            this.canId = canId;
-            this.data = data;
-            this.pgn = pgn;
-        }
+        //public CanFrame(final CanInterface canIf, final CanId canId,
+                //int pgn, byte[] data) {
+            //this.canIf = canIf;
+            //this.canId = canId;
+            //this.data = data;
+            //this.pgn = pgn;
+        //}
         
-        /* this constructor is used in native code */
-        @SuppressWarnings("unused")
-        private CanFrame(int canIf, int canid, int pgn, byte[] data) {
-            if (data.length > 8) {
-                throw new IllegalArgumentException();
-            }
-            this.canIf = new CanInterface(canIf);
-            this.canId = new CanId(canid);
-            this.pgn = pgn;
-            this.data = data;
-        }
+        //[> this constructor is used in native code <]
+        //@SuppressWarnings("unused")
+        //private CanFrame(int canIf, int canid, int pgn, byte[] data) {
+            //if (data.length > 8) {
+                //throw new IllegalArgumentException();
+            //}
+            //this.canIf = new CanInterface(canIf);
+            //this.canId = new CanId(canid);
+            //this.pgn = pgn;
+            //this.data = data;
+        //}
         
-        public CanId getCanId() {
-            return canId;
-        }
+        //public CanId getCanId() {
+            //return canId;
+        //}
         
-        public byte[] getData() {
-            return data;
-        }
+        //public byte[] getData() {
+            //return data;
+        //}
 
-        public int getPGN() {
-            return pgn;
-        }
+        //public int getPGN() {
+            //return pgn;
+        //}
         
-        public CanInterface getCanInterfacae() {
-            return canIf;
-        }
+        //public CanInterface getCanInterfacae() {
+            //return canIf;
+        //}
 
-	@Override
-	public String toString() {
-	    return "CanFrame [canIf=" + canIf + ", canId=" + canId + ", data="
-		    + Arrays.toString(data) + "]";
-	}
+	//@Override
+	//public String toString() {
+	    //return "CanFrame [canIf=" + canIf + ", canId=" + canId + ", data="
+		    //+ Arrays.toString(data) + "]";
+	//}
 	
-	@Override
-	protected Object clone() {
-	    return new CanFrame(canIf, (CanId)canId.clone(),
-	            pgn, Arrays.copyOf(data, data.length));
-	}
-    }
+	//@Override
+	//protected Object clone() {
+	    //return new CanFrame(canIf, (CanId)canId.clone(),
+		    //pgn, Arrays.copyOf(data, data.length));
+	//}
+    //}
     
     public static enum Mode {
-        RAW, BCM, ISOBUS
+        RAW, BCM, J1939 
     }
     
     private final int _fd;
@@ -250,8 +250,8 @@ public final class CanSocket implements Closeable {
         case RAW:
             _fd = _openSocketRAW();
             break;
-        case ISOBUS:
-            _fd = _openSocketISOBUS();
+        case J1939:
+            _fd = _openSocketJ1939();
             break;
         default:
             throw new IllegalStateException("unkown mode " + mode);
@@ -264,13 +264,13 @@ public final class CanSocket implements Closeable {
         this._boundTo = canInterface;
     }
 
-    public void send(CanFrame frame) throws IOException {
-        _sendFrame(_fd, frame.canIf._ifIndex, frame.canId._canId, frame.data);
-    }
+    //public void send(CanFrame frame) throws IOException {
+        //_sendFrame(_fd, frame.canIf._ifIndex, frame.canId._canId, frame.data);
+    //}
     
-    public CanFrame recv() throws IOException {
-	   return _recvFrame(_fd);
-    }
+    //public CanFrame recv() throws IOException {
+	   //return _recvFrame(_fd);
+    //}
     
     @Override
     public void close() throws IOException {
