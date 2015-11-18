@@ -118,7 +118,7 @@ public class CanSocketTest {
             assert socket.getJ1939RecvOwnMode();
 	    //socket.setJ1939SendPrioMode(7);
 	    //assert socket.getJ1939SendPrioMode();
-            socket.setJ1939PromiscMode(false);
+	    socket.setJ1939PromiscMode(false);
             assert !socket.getJ1939PromiscMode();
             socket.setJ1939RecvOwnMode(false);
             assert !socket.getJ1939RecvOwnMode();
