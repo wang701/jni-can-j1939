@@ -41,7 +41,7 @@ all: stamps/create-jar stamps/compile-test
 
 .PHONY: clean
 clean:
-	$(RM) -r $(DIRS) $(STAMPS) $(filter $(JNI_SRC))
+	$(RM) -r $(DIRS) $(STAMPS) $(filter isobus.h,$(JNI_SRC))
 
 .PHONY: run
 run:

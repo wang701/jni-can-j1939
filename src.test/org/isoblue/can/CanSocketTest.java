@@ -14,7 +14,8 @@ import org.isoblue.can.CanSocket.CanInterface;
 import org.isoblue.can.CanSocket.Mode;
 
 public class CanSocketTest {
-	private static final String CAN_INTERFACE = "can0";
+    private static final String CAN_INTERFACE_0 = "can0";
+    private static final String CAN_INTERFACE_1 = "can1";
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD})
@@ -77,19 +78,53 @@ public class CanSocketTest {
          new CanSocket(Mode.J1939).close();
     }
 
-    //@Test
-    //public void testInterfaceJ1939() throws IOException {
-         //try (final CanSocket socket = new CanSocket(Mode.J1939)) {
-             //new CanInterface(socket, CAN_INTERFACE);
-         //}
-    //}
-    
     @Test
     public void testBindInterfaceJ1939() throws IOException {
 	 try (final CanSocket socket = new CanSocket(Mode.J1939)) {
-	    final CanInterface canIf = new CanInterface(socket, CAN_INTERFACE);
+	    final CanInterface canIf = new CanInterface(socket, CAN_INTERFACE_0);
 	    socket.bind(canIf);
 	 }
+    }
+
+    @Test
+    public void testBindInterfaceRAW() throws IOException {
+	 try (final CanSocket socket = new CanSocket(Mode.RAW)) {
+	    final CanInterface canIf = new CanInterface(socket, CAN_INTERFACE_1);
+	    socket.bind(canIf);
+	 }
+    }
+
+    @Test
+    public void testSockOptsRAW() throws IOException {
+        try (final CanSocket socket = new CanSocket(Mode.RAW)) {
+            socket.setRAWLoopbackMode(true);
+            assert socket.getRAWLoopbackMode();
+            socket.setRAWRecvOwnMsgsMode(true);
+            assert socket.getRAWRecvOwnMsgsMode();
+            socket.setRAWRecvOwnMsgsMode(false);
+            assert !socket.getRAWRecvOwnMsgsMode();
+            socket.setRAWLoopbackMode(false);
+            assert !socket.getRAWLoopbackMode();
+        }
+    }
+
+    @Test
+    public void testSockOptsJ1939() throws IOException {
+        try (final CanSocket socket = new CanSocket(Mode.J1939)) {
+	    socket.setJ1939RecvBuffSize(1024);
+            socket.setJ1939PromiscMode(true);
+            assert socket.getJ1939PromiscMode();
+            socket.setJ1939RecvOwnMode(true);
+            assert socket.getJ1939RecvOwnMode();
+	    //socket.setJ1939SendPrioMode(7);
+	    //assert socket.getJ1939SendPrioMode();
+            socket.setJ1939PromiscMode(false);
+            assert !socket.getJ1939PromiscMode();
+            socket.setJ1939RecvOwnMode(false);
+            assert !socket.getJ1939RecvOwnMode();
+	    //socket.setJ1939SendPrioMode(0);
+	    //assert !socket.getJ1939SendPrioMode();
+        }
     }
 
     //@Test

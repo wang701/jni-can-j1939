@@ -73,36 +73,43 @@ public final class CanSocket implements Closeable {
     private static native int _fetch_CAN_RAW_ERR_FILTER();
     private static native int _fetch_CAN_RAW_LOOPBACK();
     private static native int _fetch_CAN_RAW_RECV_OWN_MSGS();
-    private static native int _fetch_SO_J1939_FILTER();
+    private static native int _fetch_mode_RAW();
+    private static native int _fetch_mode_J1939();
+    private static native int _fetch_mode_SOL_SOCKET();
+    //private static native int _fetch_SO_J1939_FILTER();
     private static native int _fetch_SO_J1939_PROMISC();
     private static native int _fetch_SO_J1939_RECV_OWN();
-    private static native int _fetch_SO_J1939_SEND_PRIO();     
+    private static native int _fetch_SO_J1939_SEND_PRIO();
+    private static native int _fetch_SO_RCVBUF();     
+
     private static final int CAN_RAW_FILTER = _fetch_CAN_RAW_FILTER();
     private static final int CAN_RAW_ERR_FILTER = _fetch_CAN_RAW_ERR_FILTER();
     private static final int CAN_RAW_LOOPBACK = _fetch_CAN_RAW_LOOPBACK();
     private static final int CAN_RAW_RECV_OWN_MSGS = _fetch_CAN_RAW_RECV_OWN_MSGS();
-    private static final int SO_J1939_FILTER = _fetch_SO_J1939_FILTER();
+    //private static final int SO_J1939_FILTER = _fetch_SO_J1939_FILTER();
     private static final int SO_J1939_PROMISC = _fetch_SO_J1939_PROMISC();
     private static final int SO_J1939_RECV_OWN = _fetch_SO_J1939_RECV_OWN();
     private static final int SO_J1939_SEND_PRIO = _fetch_SO_J1939_SEND_PRIO();
     private static final int SO_RCVBUF = _fetch_SO_RCVBUF();
+    private static final int SOL_CAN_RAW = _fetch_mode_RAW();
+    private static final int SOL_CAN_J1939 = _fetch_mode_J1939();
+    private static final int SOL_SOCKET = _fetch_mode_SOL_SOCKET();
 
     private static native int _openSocketRAW() throws IOException;
     private static native int _openSocketBCM() throws IOException;
     private static native int _openSocketJ1939() throws IOException;
+    private static native void _close(final int fd) throws IOException;
+    private static native void _bindToSocket(final int fd, final int ifId)
+	throws IOException;
     
     private static native int _discoverInterfaceIndex(final int fd, final String ifName)
 	throws IOException;
     private static native String _discoverInterfaceName(final int fd, final int ifIndex)
 	throws IOException;
     
-    private static native void _bindToSocket(final int fd, final int ifId)
-	throws IOException;
-    private static native void _close(final int fd) throws IOException;
-    
-    private static native void _setsockopt(final int fd, final int op,
+    private static native void _setsockopt(final int fd, final int mode, final int op,
             final int stat) throws IOException;
-    private static native int _getsockopt(final int fd, final int op)
+    private static native int _getsockopt(final int fd, final int mode, final int op)
             throws IOException;
 
     
@@ -304,45 +311,46 @@ public final class CanSocket implements Closeable {
     }
 
     public void setRAWLoopbackMode(final boolean on) throws IOException {
-        _setsockopt(_fd, CAN_RAW_LOOPBACK, on ? 1 : 0);
+        _setsockopt(_fd, SOL_CAN_RAW, CAN_RAW_LOOPBACK, on ? 1 : 0);
     }
 
     public boolean getRAWLoopbackMode() throws IOException {
-        return _getsockopt(_fd, CAN_RAW_LOOPBACK) == 1;
+        return _getsockopt(_fd, SOL_CAN_RAW, CAN_RAW_LOOPBACK) == 1;
     }
 
     public void setRAWRecvOwnMsgsMode(final boolean on) throws IOException {
-        _setsockopt(_fd, CAN_RAW_RECV_OWN_MSGS, on ? 1 : 0);
+        _setsockopt(_fd, SOL_CAN_RAW, CAN_RAW_RECV_OWN_MSGS, on ? 1 : 0);
     }
 
-    public boolean getRecvOwnMsgsMode() throws IOException {
-        return _getsockopt(_fd, CAN_RAW_RECV_OWN_MSGS) == 1;
+    public boolean getRAWRecvOwnMsgsMode() throws IOException {
+        return _getsockopt(_fd, SOL_CAN_RAW, CAN_RAW_RECV_OWN_MSGS) == 1;
     }
 
-    public boolean setJ1939PromiscMode(final boolean on) throws IOException {
-    	_setsockopt(_fd, SO_J1939_PROMISC, on ? 1 : 0);
+    public void setJ1939PromiscMode(final boolean on) throws IOException {
+    	_setsockopt(_fd, SOL_CAN_J1939, SO_J1939_PROMISC, on ? 1 : 0);
     }    
      
     public boolean getJ1939PromiscMode() throws IOException {
-        return _getsockopt(_fd, SO_J1939_PROMISC) == 1;
+        return _getsockopt(_fd, SOL_CAN_J1939, SO_J1939_PROMISC) == 1;
     }
     
-    public boolean setJ1939RecvOwnMode(final boolean on) throws IOException {
-    	_setsockopt(_fd, SO_J1939_PROMISC, on ? 1 : 0);
+    public void setJ1939RecvOwnMode(final boolean on) throws IOException {
+    	_setsockopt(_fd, SOL_CAN_J1939, SO_J1939_RECV_OWN, on ? 1 : 0);
     }    
      
     public boolean getJ1939RecvOwnMode() throws IOException {
-        return _getsockopt(_fd, SO_J1939_PROMISC) == 1;
+        return _getsockopt(_fd, SOL_CAN_J1939, SO_J1939_RECV_OWN) == 1;
     }
     
-    public boolean setJ1939SendPrioMode(final int priority) throws IOException {
-    	_setsockopt(_fd, SO_J1939_PROMISC, priority);
+    public void setJ1939SendPrioMode(final int priority) throws IOException {
+    	_setsockopt(_fd, SOL_CAN_J1939, SO_J1939_SEND_PRIO, priority);
     }    
      
     public boolean getJ1939SendPrioMode() throws IOException {
-        return _getsockopt(_fd, SO_J1939_PROMISC) == 1;
+        return _getsockopt(_fd, SOL_CAN_J1939, SO_J1939_SEND_PRIO) == 1;
     }
 
-
-
+    public void setJ1939RecvBuffSize(final int buffsize) throws IOException {
+    	_setsockopt(_fd, SOL_SOCKET, SO_RCVBUF, buffsize); 
+    }
 }

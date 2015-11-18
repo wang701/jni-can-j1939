@@ -165,6 +165,32 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket__1bindToSocket
 	}
 }
 
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket__1setsockopt
+(JNIEnv *env, jclass obj, jint fd, jint mode, jint op, jint stat)
+{
+ 	const int _stat = stat;
+        const int _mode = mode;
+ 	if (setsockopt(fd, _mode, op, &_stat, sizeof(_stat)) == -1) {
+		 throwIOExceptionErrno(env, errno);
+ 	}
+}
+
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1getsockopt
+(JNIEnv *env, jclass obj, jint fd, jint mode, jint op)
+{
+	int _stat = 0;
+	const int _mode = mode;
+ 	socklen_t len = sizeof(_stat);
+	if (getsockopt(fd, _mode, op, &_stat, &len) == -1) {
+		throwIOExceptionErrno(env, errno);
+ 	}
+ 	if (len != sizeof(_stat)) {
+	 	throwIllegalArgumentException(env, "setsockopt return size is different");
+		return -1;
+ 	}
+ 	return _stat;
+}
+
 //JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket__1sendFrame
 //(JNIEnv *env, jclass obj, jint fd, jint if_idx, jint canid, jbyteArray data)
 //{
@@ -261,26 +287,71 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket__1bindToSocket
 	//return ret; 
 //}
 
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket__1setsockopt
-(JNIEnv *env, jclass obj, jint fd, jint op, jint stat)
+/* constants */
+
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1CAN_1RAW_1FILTER
+(JNIEnv *env, jclass obj)
 {
- 	const int _stat = stat;
- 	if (setsockopt(fd, SOL_CAN_RAW, op, &_stat, sizeof(_stat)) == -1) {
-		 throwIOExceptionErrno(env, errno);
- 	}
+	return CAN_RAW_FILTER;
 }
 
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1getsockopt
-(JNIEnv *env, jclass obj, jint fd, jint op)
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1CAN_1RAW_1ERR_1FILTER
+(JNIEnv *env, jclass obj)
 {
-	int _stat = 0;
- 	socklen_t len = sizeof(_stat);
-	if (getsockopt(fd, SOL_CAN_RAW, op, &_stat, &len) == -1) {
-		throwIOExceptionErrno(env, errno);
- 	}
- 	if (len != sizeof(_stat)) {
-	 	throwIllegalArgumentException(env, "setsockopt return size is different");
-		return -1;
- 	}
- 	return _stat;
+	return CAN_RAW_ERR_FILTER;
 }
+
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1CAN_1RAW_1LOOPBACK
+(JNIEnv *env, jclass obj)
+{
+	return CAN_RAW_LOOPBACK;
+}
+
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1CAN_1RAW_1RECV_1OWN_1MSGS
+(JNIEnv *env, jclass obj)
+{
+	return CAN_RAW_RECV_OWN_MSGS;
+}
+
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1SO_1J1939_1PROMISC
+(JNIEnv *env, jclass obj)
+{
+	return SO_J1939_PROMISC;
+}
+
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1SO_1J1939_1RECV_1OWN
+(JNIEnv *env, jclass obj)
+{
+	return SO_J1939_RECV_OWN;
+}
+
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1SO_1J1939_1SEND_1PRIO
+(JNIEnv *env, jclass obj)
+{
+	return SO_J1939_SEND_PRIO;
+}
+
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1SO_1RCVBUF
+(JNIEnv *env, jclass obj)
+{
+	return SO_RCVBUF;
+}
+
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1mode_1RAW
+(JNIEnv *env, jclass obj)
+{
+	return SOL_CAN_RAW;
+}
+
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1mode_1J1939
+(JNIEnv *env, jclass obj)
+{
+	return SOL_CAN_J1939;
+}
+
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1mode_1SOL_1SOCKET
+(JNIEnv *, jclass)
+{
+	return SOL_SOCKET;
+}
+
