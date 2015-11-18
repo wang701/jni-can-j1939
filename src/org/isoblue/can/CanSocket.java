@@ -68,7 +68,25 @@ public final class CanSocket implements Closeable {
     }
 
     public static final CanInterface CAN_ALL_INTERFACES = new CanInterface(0);
-    
+
+    private static native int _fetch_CAN_RAW_FILTER();
+    private static native int _fetch_CAN_RAW_ERR_FILTER();
+    private static native int _fetch_CAN_RAW_LOOPBACK();
+    private static native int _fetch_CAN_RAW_RECV_OWN_MSGS();
+    private static native int _fetch_SO_J1939_FILTER();
+    private static native int _fetch_SO_J1939_PROMISC();
+    private static native int _fetch_SO_J1939_RECV_OWN();
+    private static native int _fetch_SO_J1939_SEND_PRIO();     
+    private static final int CAN_RAW_FILTER = _fetch_CAN_RAW_FILTER();
+    private static final int CAN_RAW_ERR_FILTER = _fetch_CAN_RAW_ERR_FILTER();
+    private static final int CAN_RAW_LOOPBACK = _fetch_CAN_RAW_LOOPBACK();
+    private static final int CAN_RAW_RECV_OWN_MSGS = _fetch_CAN_RAW_RECV_OWN_MSGS();
+    private static final int SO_J1939_FILTER = _fetch_SO_J1939_FILTER();
+    private static final int SO_J1939_PROMISC = _fetch_SO_J1939_PROMISC();
+    private static final int SO_J1939_RECV_OWN = _fetch_SO_J1939_RECV_OWN();
+    private static final int SO_J1939_SEND_PRIO = _fetch_SO_J1939_SEND_PRIO();
+    private static final int SO_RCVBUF = _fetch_SO_RCVBUF();
+
     private static native int _openSocketRAW() throws IOException;
     private static native int _openSocketBCM() throws IOException;
     private static native int _openSocketJ1939() throws IOException;
@@ -77,13 +95,21 @@ public final class CanSocket implements Closeable {
 	throws IOException;
     private static native String _discoverInterfaceName(final int fd, final int ifIndex)
 	throws IOException;
+    
     private static native void _bindToSocket(final int fd, final int ifId)
 	throws IOException;
+    private static native void _close(final int fd) throws IOException;
+    
+    private static native void _setsockopt(final int fd, final int op,
+            final int stat) throws IOException;
+    private static native int _getsockopt(final int fd, final int op)
+            throws IOException;
+
+    
     //private static native CanFrame _recvFrame(final int fd)
 	//throws IOException;
     //private static native void _sendFrame(final int fd, final int canif,
 	//final int canid, final byte[] data) throws IOException;
-    private static native void _close(final int fd) throws IOException;
     
     public final static class CanId implements Cloneable {
         private int _canId = 0;
@@ -276,4 +302,47 @@ public final class CanSocket implements Closeable {
     public void close() throws IOException {
         _close(_fd);
     }
+
+    public void setRAWLoopbackMode(final boolean on) throws IOException {
+        _setsockopt(_fd, CAN_RAW_LOOPBACK, on ? 1 : 0);
+    }
+
+    public boolean getRAWLoopbackMode() throws IOException {
+        return _getsockopt(_fd, CAN_RAW_LOOPBACK) == 1;
+    }
+
+    public void setRAWRecvOwnMsgsMode(final boolean on) throws IOException {
+        _setsockopt(_fd, CAN_RAW_RECV_OWN_MSGS, on ? 1 : 0);
+    }
+
+    public boolean getRecvOwnMsgsMode() throws IOException {
+        return _getsockopt(_fd, CAN_RAW_RECV_OWN_MSGS) == 1;
+    }
+
+    public boolean setJ1939PromiscMode(final boolean on) throws IOException {
+    	_setsockopt(_fd, SO_J1939_PROMISC, on ? 1 : 0);
+    }    
+     
+    public boolean getJ1939PromiscMode() throws IOException {
+        return _getsockopt(_fd, SO_J1939_PROMISC) == 1;
+    }
+    
+    public boolean setJ1939RecvOwnMode(final boolean on) throws IOException {
+    	_setsockopt(_fd, SO_J1939_PROMISC, on ? 1 : 0);
+    }    
+     
+    public boolean getJ1939RecvOwnMode() throws IOException {
+        return _getsockopt(_fd, SO_J1939_PROMISC) == 1;
+    }
+    
+    public boolean setJ1939SendPrioMode(final int priority) throws IOException {
+    	_setsockopt(_fd, SO_J1939_PROMISC, priority);
+    }    
+     
+    public boolean getJ1939SendPrioMode() throws IOException {
+        return _getsockopt(_fd, SO_J1939_PROMISC) == 1;
+    }
+
+
+
 }

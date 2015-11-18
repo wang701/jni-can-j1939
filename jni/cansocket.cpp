@@ -261,28 +261,26 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket__1bindToSocket
 	//return ret; 
 //}
 
-/* TEMPORAILY NOT IMPLEMENTING THIS */
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket__1setsockopt
+(JNIEnv *env, jclass obj, jint fd, jint op, jint stat)
+{
+ 	const int _stat = stat;
+ 	if (setsockopt(fd, SOL_CAN_RAW, op, &_stat, sizeof(_stat)) == -1) {
+		 throwIOExceptionErrno(env, errno);
+ 	}
+}
 
-// JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket__1setsockopt
-// (JNIEnv *env, jclass obj, jint fd, jint op, jint stat)
-// {
-// 	const int _stat = stat;
-// 	if (setsockopt(fd, SOL_CAN_RAW, op, &_stat, sizeof(_stat)) == -1) {
-// 		throwIOExceptionErrno(env, errno);
-// 	}
-// }
-
-// JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1getsockopt
-// (JNIEnv *env, jclass obj, jint fd, jint op)
-// {
-// 	int _stat = 0;
-// 	socklen_t len = sizeof(_stat);
-// 	if (getsockopt(fd, SOL_CAN_RAW, op, &_stat, &len) == -1) {
-// 		throwIOExceptionErrno(env, errno);
-// 	}
-// 	if (len != sizeof(_stat)) {
-// 		throwIllegalArgumentException(env, "setsockopt return size is different");
-// 		return -1;
-// 	}
-// 	return _stat;
-// }
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1getsockopt
+(JNIEnv *env, jclass obj, jint fd, jint op)
+{
+	int _stat = 0;
+ 	socklen_t len = sizeof(_stat);
+	if (getsockopt(fd, SOL_CAN_RAW, op, &_stat, &len) == -1) {
+		throwIOExceptionErrno(env, errno);
+ 	}
+ 	if (len != sizeof(_stat)) {
+	 	throwIllegalArgumentException(env, "setsockopt return size is different");
+		return -1;
+ 	}
+ 	return _stat;
+}
