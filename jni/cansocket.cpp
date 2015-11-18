@@ -14,12 +14,13 @@ extern "C" {
 #include <net/if.h>
 #include <linux/can.h>
 #include <linux/can/raw.h>
+#include <linux/can/j1939.h>
 }
 
 #if defined(ANDROID) || defined(__ANDROID__)
 #include "jni.h"
 #else
-#include "org_isoblue_j1939_CanSocket.h"
+#include "org_isoblue_can_CanSocket.h"
 #endif
 
 static const int ERRNO_BUFFER_LEN = 1024;
@@ -96,7 +97,7 @@ JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1openSocketBCM
 JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1openSocketJ1939
 (JNIEnv *env, jclass obj)
 {
-	return newCanSocket(env, SOCK_DGRAM, CAN_ISOBUS);
+	return newCanSocket(env, SOCK_DGRAM, CAN_J1939);
 }
 
 JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket__1close
@@ -155,107 +156,110 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket__1bindToSocket
 	struct sockaddr_can addr;
 	addr.can_family = AF_CAN;
 	addr.can_ifindex = ifIndex;
-	// addr.can_addr.isobus.addr = tmp;
+	addr.can_addr.j1939.name = J1939_NO_NAME;
+	addr.can_addr.j1939.addr = J1939_NO_ADDR;
+	addr.can_addr.j1939.pgn = J1939_NO_PGN;
+	
 	if (bind(fd, reinterpret_cast<struct sockaddr *>(&addr), sizeof(addr)) != 0) {
 		throwIOExceptionErrno(env, errno);
 	}
 }
 
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket__1sendFrame
-(JNIEnv *env, jclass obj, jint fd, jint if_idx, jint canid, jbyteArray data)
-{
-	const int flags = 0;
-	ssize_t nbytes;
-	struct sockaddr_can addr;
-	struct can_frame frame;
-	memset(&addr, 0, sizeof(addr));
-	memset(&frame, 0, sizeof(frame));
-	addr.can_family = AF_CAN;
-	addr.can_ifindex = if_idx;
-	const jsize len = env->GetArrayLength(data);
-	if (env->ExceptionCheck() == JNI_TRUE) {
-		return;
-	}
-	frame.can_id = canid;
-	frame.can_dlc = static_cast<__u8>(len);
-	env->GetByteArrayRegion(data, 0, len, reinterpret_cast<jbyte *>(&frame.data));
-	if (env->ExceptionCheck() == JNI_TRUE) {
-		return;
-	}
-	nbytes = sendto(fd, &frame, sizeof(frame), flags,
-			reinterpret_cast<struct sockaddr *>(&addr),
-			sizeof(addr));
-	if (nbytes == -1) {
-		throwIOExceptionErrno(env, errno);
-	} else if (nbytes != sizeof(frame)) {
-		throwIOExceptionMsg(env, "send partial frame");
-	}
-}
+//JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket__1sendFrame
+//(JNIEnv *env, jclass obj, jint fd, jint if_idx, jint canid, jbyteArray data)
+//{
+	//const int flags = 0;
+	//ssize_t nbytes;
+	//struct sockaddr_can addr;
+	//struct can_frame frame;
+	//memset(&addr, 0, sizeof(addr));
+	//memset(&frame, 0, sizeof(frame));
+	//addr.can_family = AF_CAN;
+	//addr.can_ifindex = if_idx;
+	//const jsize len = env->GetArrayLength(data);
+	//if (env->ExceptionCheck() == JNI_TRUE) {
+		//return;
+	//}
+	//frame.can_id = canid;
+	//frame.can_dlc = static_cast<__u8>(len);
+	//env->GetByteArrayRegion(data, 0, len, reinterpret_cast<jbyte *>(&frame.data));
+	//if (env->ExceptionCheck() == JNI_TRUE) {
+		//return;
+	//}
+	//nbytes = sendto(fd, &frame, sizeof(frame), flags,
+			//reinterpret_cast<struct sockaddr *>(&addr),
+			//sizeof(addr));
+	//if (nbytes == -1) {
+		//throwIOExceptionErrno(env, errno);
+	//} else if (nbytes != sizeof(frame)) {
+		//throwIOExceptionMsg(env, "send partial frame");
+	//}
+//}
 
-JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocket__1recvFrame
-(JNIEnv *env, jclass obj, jint fd)
-{
-	ssize_t nbytes;
-	struct msghdr msg;
-	struct iovec iov;
-	struct isobus_mesg mesg;
+//JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocket__1recvFrame
+//(JNIEnv *env, jclass obj, jint fd)
+//{
+	//ssize_t nbytes;
+	//struct msghdr msg;
+	//struct iovec iov;
+	//struct isobus_mesg mesg;
 
-	char ctrlmsg[CMSG_SPACE(sizeof(struct timeval))+CMSG_SPACE(sizeof(__u32))];
+	//char ctrlmsg[CMSG_SPACE(sizeof(struct timeval))+CMSG_SPACE(sizeof(__u32))];
 
-	memset(&msg, 0, sizeof(msg));
-	memset(&mesg, 0, sizeof(mesg));
-	memset(&iov, 0, sizeof(iov));
+	//memset(&msg, 0, sizeof(msg));
+	//memset(&mesg, 0, sizeof(mesg));
+	//memset(&iov, 0, sizeof(iov));
 
-	msg.msg_iov = &iov;
-	msg.msg_control = &ctrlmsg;
-	msg.msg_controllen = sizeof(ctrlmsg);
-	msg.msg_iovlen = 1;
-	iov.iov_base = &mesg;
-	iov.iov_len = sizeof(mesg);
+	//msg.msg_iov = &iov;
+	//msg.msg_control = &ctrlmsg;
+	//msg.msg_controllen = sizeof(ctrlmsg);
+	//msg.msg_iovlen = 1;
+	//iov.iov_base = &mesg;
+	//iov.iov_len = sizeof(mesg);
 
-	nbytes = recvmsg(fd, &msg, 0);
-	if (nbytes == -1) {
-		throwIOExceptionErrno(env, errno);
-		return NULL;
-	}
+	//nbytes = recvmsg(fd, &msg, 0);
+	//if (nbytes == -1) {
+		//throwIOExceptionErrno(env, errno);
+		//return NULL;
+	//}
 
-	const jsize data_size = mesg.dlen;
-	const jint pgn = mesg.pgn;
-	const jbyteArray data = env->NewByteArray(data_size);
+	//const jsize data_size = mesg.dlen;
+	//const jint pgn = mesg.pgn;
+	//const jbyteArray data = env->NewByteArray(data_size);
 
-	if (data == NULL) {
-		if (env->ExceptionCheck() != JNI_TRUE) {
-			throwOutOfMemoryError(env, "could not allocate ByteArray");
-		}
-		return NULL;
-	}
+	//if (data == NULL) {
+		//if (env->ExceptionCheck() != JNI_TRUE) {
+			//throwOutOfMemoryError(env, "could not allocate ByteArray");
+		//}
+		//return NULL;
+	//}
 
-	env->SetByteArrayRegion(data, 0, data_size, reinterpret_cast<jbyte *>(&mesg.data));
-	if (env->ExceptionCheck() == JNI_TRUE) {
-		return NULL;
-	}
+	//env->SetByteArrayRegion(data, 0, data_size, reinterpret_cast<jbyte *>(&mesg.data));
+	//if (env->ExceptionCheck() == JNI_TRUE) {
+		//return NULL;
+	//}
 
-	const jclass can_frame_clazz = env->FindClass("org/isoblue/can/"
-							"CanSocket$CanFrame");
-	if (can_frame_clazz == NULL) {
-		return NULL;
-	}
-	const jmethodID can_frame_cstr = env->GetMethodID(can_frame_clazz,
-							"<init>", "(III[B)V");
+	//const jclass can_frame_clazz = env->FindClass("org/isoblue/can/"
+							//"CanSocket$CanFrame");
+	//if (can_frame_clazz == NULL) {
+		//return NULL;
+	//}
+	//const jmethodID can_frame_cstr = env->GetMethodID(can_frame_clazz,
+							//"<init>", "(III[B)V");
 							/* <init> is magic 
 							* CanFrame class in CanSocket.java has 3 int, 1 byte array parameters,
 							* returns void.
 							* Hence the signature.
 							*/
-	if (can_frame_cstr == NULL) {
-		return NULL;
-	}
+	//if (can_frame_cstr == NULL) {
+		//return NULL;
+	//}
 
-	const jobject ret = env->NewObject(can_frame_clazz, can_frame_cstr,
-					   					0, 0, pgn, data);
+	//const jobject ret = env->NewObject(can_frame_clazz, can_frame_cstr,
+										   //0, 0, pgn, data);
 
-	return ret; 
-}
+	//return ret; 
+//}
 
 /* TEMPORAILY NOT IMPLEMENTING THIS */
 

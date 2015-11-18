@@ -260,8 +260,8 @@ public final class CanSocket implements Closeable {
     }
     
     public void bind(CanInterface canInterface) throws IOException {
-        _bindToSocket(_fd, canInterface._ifIndex);
-        this._boundTo = canInterface;
+	_bindToSocket(_fd, canInterface._ifIndex);
+	this._boundTo = canInterface;
     }
 
     //public void send(CanFrame frame) throws IOException {

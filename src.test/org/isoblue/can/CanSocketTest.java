@@ -8,13 +8,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 
-import org.isoblue.can.CanSocket.CanFrame;
+//import org.isoblue.can.CanSocket.CanFrame;
 import org.isoblue.can.CanSocket.CanId;
 import org.isoblue.can.CanSocket.CanInterface;
 import org.isoblue.can.CanSocket.Mode;
 
 public class CanSocketTest {
-	private static final String CAN_INTERFACE = "vcan0";
+	private static final String CAN_INTERFACE = "can0";
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD})
@@ -48,9 +48,9 @@ public class CanSocketTest {
                 System.out.print("Test: " + testMethod.getName());
                 try {
                     testMethod.invoke(dummy);
-                    System.out.println("OK");
+                    System.out.println("...OK");
                 } catch (final Exception e) {
-                    System.out.println("FAILED");
+                    System.out.println("...FAILED");
                     e.printStackTrace();
                     succeeded = false;
                 }
@@ -61,46 +61,56 @@ public class CanSocketTest {
             System.exit(-1);
         }
     }
-
+    
     @Test
-    public void testSocketCanIsobusCreate() throws IOException {
-         new CanSocket(Mode.ISOBUS).close();
-    }
-
-    @Test
-    public void testInterface() throws IOException {
-         try (final CanSocket socket = new CanSocket(Mode.ISOBUS)) {
-             new CanInterface(socket, CAN_INTERFACE);
-         }
+    public void testSocketCanRAWCreate() throws IOException {
+         new CanSocket(Mode.RAW).close();
     }
     
     @Test
-    public void testBindInterface() throws IOException {
-         try (final CanSocket socket = new CanSocket(Mode.ISOBUS)) {
-            final CanInterface canIf = new CanInterface(socket, CAN_INTERFACE);
-            socket.bind(canIf);
-         }
+    public void testSocketCanBCMCreate() throws IOException {
+         new CanSocket(Mode.BCM).close();
     }
 
     @Test
-    public void testRecv() throws IOException {
-        try (final CanSocket socket = new CanSocket(Mode.ISOBUS)) {
-            final CanInterface canIf = new CanInterface(socket, CAN_INTERFACE);
-            socket.bind(canIf);
-            int pgn = 0;
-            byte[] data = { 0 };
-            final CanFrame canf = socket.recv();
-            data = canf.getData();
-            pgn = canf.getPGN();
-
-            System.out.print("\nPGN:");
-            System.out.format("%x", pgn);
-            System.out.print("\nDATA:");
-            // for (byte c : data) {
-            //     System.out.format("%x", c);
-            // }
-            System.out.println(byteArrayToHex(data));
-        }
+    public void testSocketCanJ1939Create() throws IOException {
+         new CanSocket(Mode.J1939).close();
     }
+
+    //@Test
+    //public void testInterfaceJ1939() throws IOException {
+         //try (final CanSocket socket = new CanSocket(Mode.J1939)) {
+             //new CanInterface(socket, CAN_INTERFACE);
+         //}
+    //}
+    
+    @Test
+    public void testBindInterfaceJ1939() throws IOException {
+	 try (final CanSocket socket = new CanSocket(Mode.J1939)) {
+	    final CanInterface canIf = new CanInterface(socket, CAN_INTERFACE);
+	    socket.bind(canIf);
+	 }
+    }
+
+    //@Test
+    //public void testRecv() throws IOException {
+        //try (final CanSocket socket = new CanSocket(Mode.ISOBUS)) {
+            //final CanInterface canIf = new CanInterface(socket, CAN_INTERFACE);
+            //socket.bind(canIf);
+            //int pgn = 0;
+            //byte[] data = { 0 };
+            //final CanFrame canf = socket.recv();
+            //data = canf.getData();
+            //pgn = canf.getPGN();
+
+            //System.out.print("\nPGN:");
+            //System.out.format("%x", pgn);
+            //System.out.print("\nDATA:");
+            //// for (byte c : data) {
+            ////     System.out.format("%x", c);
+            //// }
+            //System.out.println(byteArrayToHex(data));
+        //}
+    //}
 
 }
