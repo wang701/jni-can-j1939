@@ -1,4 +1,4 @@
-package org.isoblue.j1939;
+package org.isoblue.can;
 
 import java.io.Closeable;
 import java.io.FileNotFoundException;
@@ -19,7 +19,7 @@ import java.util.Set;
 
 public final class CanSocket implements Closeable {
     static {
-        final String LIB_CAN_INTERFACE = "j1939";
+        final String LIB_CAN_INTERFACE = "can";
         try {
             System.loadLibrary(LIB_CAN_INTERFACE);
         } catch (final UnsatisfiedLinkError e) {

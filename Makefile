@@ -23,13 +23,13 @@ JAR_DEST_FILE=$(JAR_DEST)/$(NAME).jar
 JAR_MANIFEST_FILE=META-INF/MANIFEST.MF
 DIRS=stamps $(JAVA_DEST) $(JAVA_TEST_DEST) $(LIB_DEST) $(JAR_DEST)
 JNI_DIR=jni
-JNI_CLASSES=org.isoblue.j1939.CanSocket
+JNI_CLASSES=org.isoblue.can.CanSocket
 JAVAC_FLAGS=-g -Xlint:all
 CXXFLAGS=-I./include -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions \
 -fstack-protector --param=ssp-buffer-size=4 -fPIC -Wno-unused-parameter \
 -pedantic -D_REENTRANT -D_GNU_SOURCE \
 $(JAVA_INCLUDES)
-SONAME=j1939
+SONAME=can
 LDFLAGS=-Wl,-soname,$(SONAME)
 
 .DEFAULT_GOAL := all
@@ -41,7 +41,7 @@ all: stamps/create-jar stamps/compile-test
 
 .PHONY: clean
 clean:
-	$(RM) -r $(DIRS) $(STAMPS) $(filter isobus.h,$(JNI_SRC))
+	$(RM) -r $(DIRS) $(STAMPS) $(filter $(JNI_SRC))
 
 .PHONY: run
 run:
@@ -78,4 +78,4 @@ stamps/create-jar: stamps/compile-jni $(JAR_MANIFEST_FILE)
 check: stamps/create-jar stamps/compile-test
 	$(JAVA) -ea -cp $(JAR_DEST_FILE):$(JAVA_TEST_DEST) \
 		-Xcheck:jni \
-		org.isoblue.j1939.CanSocketTest
+		org.isoblue.can.CanSocketTest

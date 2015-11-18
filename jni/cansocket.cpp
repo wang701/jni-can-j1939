@@ -93,7 +93,7 @@ JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1openSocketBCM
 	return newCanSocket(env, SOCK_DGRAM, CAN_BCM);
 }
 
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1openSocketISOBUS
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1openSocketJ1939
 (JNIEnv *env, jclass obj)
 {
 	return newCanSocket(env, SOCK_DGRAM, CAN_ISOBUS);
