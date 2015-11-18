@@ -1,3 +1,4 @@
 *.swp
 dist/
 lib/
+classes.test/
