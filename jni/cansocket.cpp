@@ -89,3 +89,44 @@ JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_mOpenSocket
         throwIOExceptionErrno(env, errno);
         return -1;
 }
+
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_mGetIfIndex
+(JNIEnv *env, jclass obj, jint fd, jstring ifName)
+{
+	struct ifreq ifreq;
+	const jsize ifNameSize = env->GetStringUTFLength(ifName);
+	if (ifNameSize > IFNAMSIZ-1) {
+		throwIllegalArgumentException(env, "illegal interface name");
+		return -1;
+	}
+
+	/* fetch interface name */
+	memset(&ifreq, 0x0, sizeof(ifreq));
+	env->GetStringUTFRegion(ifName, 0, ifNameSize,
+				ifreq.ifr_name);
+	if (env->ExceptionCheck() == JNI_TRUE) {
+		return -1;
+	}
+	/* discover interface id */
+	const int err = ioctl(fd, SIOCGIFINDEX, &ifreq);
+	if (err == -1) {
+		throwIOExceptionErrno(env, errno);
+		return -1;
+	} else {
+		return ifreq.ifr_ifindex;
+	}
+}
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_mbind
+(JNIEnv *env, jclass obj, jint fd, jint ifIndex)
+{
+	struct sockaddr_can addr;
+	addr.can_family = AF_CAN;
+	addr.can_ifindex = ifIndex;
+	addr.can_addr.j1939.name = J1939_NO_NAME;
+	addr.can_addr.j1939.addr = J1939_NO_ADDR;
+	addr.can_addr.j1939.pgn = J1939_NO_PGN;
+	
+	if (bind(fd, reinterpret_cast<struct sockaddr *>(&addr), sizeof(addr)) != 0) {
+		throwIOExceptionErrno(env, errno);
+	}
+}

@@ -20,9 +20,14 @@ import java.util.Set;
 public abstract class CanSocket implements Closeable {
 	
 	private int mFd;
+	private int mIfIndex;
 	private static native void mClose(final int fd) throws IOException;
 	private static native int mOpenSocket(final int socktype,
 		final int protocol) throws IOException;
+	private static native int mGetIfIndex(final int fd, final String ifName)
+		throws IOException;
+	private static native void mbind(final int fd, final int ifIndex)
+		throws IOException;
 
 	static {
 		final String LIB_CAN_INTERFACE = "can";
@@ -73,14 +78,49 @@ public abstract class CanSocket implements Closeable {
         	}
     	}
 
-	public CanSocket(final int socktype, final int protocol)
-		throws IOException {
-		this.mFd = mOpenSocket(socktype, protocol);
-	} 
-
 	protected int getmFd() {
 		return this.mFd;
 	}
+
+	public CanSocket(final int socktype, final int protocol)
+		throws IOException {
+		this.mFd = mOpenSocket(socktype, protocol);
+	}
+
+	public CanSocket(final int socktype, final int protocol,
+		final String ifName) throws IOException {
+		this.mFd = mOpenSocket(socktype, protocol);
+		this.mIfIndex = mGetIfIndex(mFd, ifName);
+		mbind(mFd, mIfIndex);
+	}
+
+	//public final static class CanInterface implements Cloneable {
+		//private final int mIfIndex;
+		//private String mIfName;
+		
+		//public CanInterface(final CanSocket socket, final String ifName)
+			//throws IOException {
+			    //this.mIfIndex = mGetIfIndex(socket.getmFd(), ifName);
+			    //this.mIfName = ifName;
+		//}
+		
+		//private CanInterface(int ifIndex, String ifName) {
+			    //this.mIfIndex = ifIndex;
+			    //this.mIfName = ifName;
+		//}
+		
+		//@Override
+		//protected Object clone() {
+			    //return new CanInterface(mIfIndex, mIfName);
+		//}
+	//}
+	
+            //private CanInterface boundIf;	
+
+	//public void bind(CanInterface canInterface) throws IOException {
+		//mbind(mFd, canInterface.mIfIndex);
+		//this.boundIf = canInterface;
+            //}
 	
 	@Override
 	public void close() throws IOException {

@@ -23,6 +23,22 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_mClose
 JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_mOpenSocket
   (JNIEnv *, jclass, jint, jint);
 
+/*
+ * Class:     org_isoblue_can_CanSocket
+ * Method:    mGetIfIndex
+ * Signature: (ILjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_mGetIfIndex
+  (JNIEnv *, jclass, jint, jstring);
+
+/*
+ * Class:     org_isoblue_can_CanSocket
+ * Method:    mbind
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_mbind
+  (JNIEnv *, jclass, jint, jint);
+
 #ifdef __cplusplus
 }
 #endif

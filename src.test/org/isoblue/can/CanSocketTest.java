@@ -64,5 +64,11 @@ public class CanSocketTest {
 	public void testJ1939Create() throws IOException {
 		final CanSocketJ1939 socket = new CanSocketJ1939();
 		socket.close();
+	}
+
+	@Test
+	public void testJ1939BindNoFilter() throws IOException {
+		final CanSocketJ1939 socket = new CanSocketJ1939("can0");
+		socket.close();
 	}	
 }
