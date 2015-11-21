@@ -23,7 +23,7 @@ JAR_DEST_FILE=$(JAR_DEST)/$(NAME).jar
 JAR_MANIFEST_FILE=META-INF/MANIFEST.MF
 DIRS=stamps $(JAVA_DEST) $(JAVA_TEST_DEST) $(LIB_DEST) $(JAR_DEST)
 JNI_DIR=jni
-JNI_CLASSES=org.isoblue.can.CanSocket
+JNI_CLASSES=org.isoblue.can.CanSocket org.isoblue.can.CanSocketJ1939
 JAVAC_FLAGS=-g -Xlint:all
 CXXFLAGS=-I./include -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions \
 -fstack-protector --param=ssp-buffer-size=4 -fPIC -Wno-unused-parameter \
