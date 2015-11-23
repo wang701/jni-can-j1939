@@ -23,16 +23,32 @@ extern "C" {
 #include "org_isoblue_can_CanSocketJ1939.h"
 #endif
 
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_mFetchJ1939
-(JNIEnv *env, jclass obj)
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_mFetch
+(JNIEnv *env, jclass obj, jstring param)
 {
-	return CAN_J1939;
-}
+    	const char *str = env->GetStringUTFChars(param, NULL);
+	if (strcmp(str, "CAN_J1939") == 0) {
+		return CAN_J1939;
+	}
+	else if (strcmp(str, "SOCK_DGRAM") == 0) {
+		return SOCK_DGRAM;
+	}
+	else if (strcmp(str, "SOL") == 0) {
+		return SOL_CAN_J1939;
+	}
+	else if (strcmp(str, "FILTER") == 0) {
+		return SO_J1939_FILTER;
+	}
+	else if (strcmp(str, "PROMISC") == 0) {
+		return SO_J1939_PROMISC;
+	}
+	else if (strcmp(str, "RECVOWN") == 0) {
+		return SO_J1939_RECV_OWN;
+	}
+	else if (strcmp(str, "PRIORITY") == 0) {
+		return SO_PRIORITY;
+	}
 
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_mFetchDGRAM
-(JNIEnv *, jclass)
-{
-	return SOCK_DGRAM;
+	return -1;
 }
-
 

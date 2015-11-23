@@ -28,6 +28,8 @@ public abstract class CanSocket implements Closeable {
 		throws IOException;
 	private static native void mbind(final int fd, final int ifIndex)
 		throws IOException;
+	private static native void mSetsockopt(final int fd, final int level,
+		final int optname, final int optval) throws IOException;
 
 	static {
 		final String LIB_CAN_INTERFACE = "can";
@@ -94,33 +96,13 @@ public abstract class CanSocket implements Closeable {
 		mbind(mFd, mIfIndex);
 	}
 
-	//public final static class CanInterface implements Cloneable {
-		//private final int mIfIndex;
-		//private String mIfName;
-		
-		//public CanInterface(final CanSocket socket, final String ifName)
-			//throws IOException {
-			    //this.mIfIndex = mGetIfIndex(socket.getmFd(), ifName);
-			    //this.mIfName = ifName;
-		//}
-		
-		//private CanInterface(int ifIndex, String ifName) {
-			    //this.mIfIndex = ifIndex;
-			    //this.mIfName = ifName;
-		//}
-		
-		//@Override
-		//protected Object clone() {
-			    //return new CanInterface(mIfIndex, mIfName);
-		//}
-	//}
+        public void setsockopt(final int level, final int optname,
+		final int optval) throws IOException {
+		mSetsockopt(mFd, level, optname, optval);
+	}
 	
-            //private CanInterface boundIf;	
-
-	//public void bind(CanInterface canInterface) throws IOException {
-		//mbind(mFd, canInterface.mIfIndex);
-		//this.boundIf = canInterface;
-            //}
+	public abstract void setJ1939filter(final long name, final int addr)
+		throws IOException;
 	
 	@Override
 	public void close() throws IOException {

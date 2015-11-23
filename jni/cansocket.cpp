@@ -130,3 +130,13 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_mbind
 		throwIOExceptionErrno(env, errno);
 	}
 }
+
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_mSetsockopt
+(JNIEnv *env, jclass obj, jint sockfd, jint level, jint optname, jint optval)
+{
+	const int _optval = optval;
+
+	if (setsockopt(sockfd, level, optname, &_optval, sizeof(_optval)) == -1) {
+		throwIOExceptionErrno(env, errno);
+	}	
+}

@@ -9,19 +9,11 @@ extern "C" {
 #endif
 /*
  * Class:     org_isoblue_can_CanSocketJ1939
- * Method:    mFetchJ1939
- * Signature: ()I
+ * Method:    mFetch
+ * Signature: (Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_mFetchJ1939
-  (JNIEnv *, jclass);
-
-/*
- * Class:     org_isoblue_can_CanSocketJ1939
- * Method:    mFetchDGRAM
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_mFetchDGRAM
-  (JNIEnv *, jclass);
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_mFetch
+  (JNIEnv *, jclass, jstring);
 
 #ifdef __cplusplus
 }

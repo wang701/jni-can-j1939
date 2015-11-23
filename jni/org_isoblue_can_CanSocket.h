@@ -39,6 +39,14 @@ JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_mGetIfIndex
 JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_mbind
   (JNIEnv *, jclass, jint, jint);
 
+/*
+ * Class:     org_isoblue_can_CanSocket
+ * Method:    mSetsockopt
+ * Signature: (IIII)V
+ */
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_mSetsockopt
+  (JNIEnv *, jclass, jint, jint, jint, jint);
+
 #ifdef __cplusplus
 }
 #endif

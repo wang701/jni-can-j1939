@@ -71,4 +71,18 @@ public class CanSocketTest {
 		final CanSocketJ1939 socket = new CanSocketJ1939("can0");
 		socket.close();
 	}	
+
+	@Test
+	public void testJ1939SetPromisc() throws IOException {
+		final CanSocketJ1939 socket = new CanSocketJ1939("can0");
+		socket.setPromisc();
+		socket.close();
+	}
+
+	@Test
+	public void testJ1939SetRecvown() throws IOException {
+		final CanSocketJ1939 socket = new CanSocketJ1939("can0");
+		socket.setRecvown();
+		socket.close();
+	}
 }
