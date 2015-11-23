@@ -22,14 +22,14 @@ public abstract class CanSocket implements Closeable {
 	
 	private int mFd;
 	private int mIfIndex;
-	private static native void mClose(final int fd) throws IOException;
-	private static native int mOpenSocket(final int socktype,
+	private static native void initIds();  
+	private native void closeSocket() throws IOException;
+	private native int openSocket(final int socktype,
 		final int protocol) throws IOException;
-	private static native int mGetIfIndex(final int fd, final String ifName)
+	private native int getIfIndex(final String ifName)
 		throws IOException;
-	private static native void mbind(final int fd, final int ifIndex)
-		throws IOException;
-	private static native void mSetsockopt(final int fd, final int level,
+	private native void bindToSocket() throws IOException;
+	private native void setSockOpt(final int level,
 		final int optname, final int optval) throws IOException;
 
 	static {
@@ -56,13 +56,13 @@ public abstract class CanSocket implements Closeable {
 
     	private static void loadLibFromJar(final String libName)
             	throws IOException {
-        		Objects.requireNonNull(libName);
-        		final String fileName = "/lib/lib" + libName + ".so";
-        		final FileAttribute<Set<PosixFilePermission>> permissions =
-                	PosixFilePermissions.asFileAttribute(
-                        	PosixFilePermissions.fromString("rw-------"));
-        		final Path tempSo = Files.createTempFile(CanSocket.class.getName(),
-                		".so", permissions);
+        	Objects.requireNonNull(libName);
+        	final String fileName = "/lib/lib" + libName + ".so";
+        	final FileAttribute<Set<PosixFilePermission>> permissions =
+                PosixFilePermissions.asFileAttribute(
+                        PosixFilePermissions.fromString("rw-------"));
+        	final Path tempSo = Files.createTempFile(CanSocket.class.getName(),
+                	".so", permissions);
         	try {
             		try (final InputStream libstream =
                     		CanSocket.class.getResourceAsStream(fileName)) {
@@ -87,19 +87,26 @@ public abstract class CanSocket implements Closeable {
 
 	public CanSocket(final int socktype, final int protocol)
 		throws IOException {
-		this.mFd = mOpenSocket(socktype, protocol);
+		initIds();
+		this.mFd = openSocket(socktype, protocol);
 	}
 
 	public CanSocket(final int socktype, final int protocol,
 		final String ifName) throws IOException {
-		this.mFd = mOpenSocket(socktype, protocol);
-		this.mIfIndex = mGetIfIndex(mFd, ifName);
-		mbind(mFd, mIfIndex);
+		initIds();
+		this.mFd = openSocket(socktype, protocol);
+		if (ifName == "all") {
+			this.mIfIndex = 0;
+		}
+		else {
+			this.mIfIndex = getIfIndex(ifName);	
+		}
+		bindToSocket();
 	}
 
         public void setsockopt(final int level, final int optname,
 		final int optval) throws IOException {
-		mSetsockopt(mFd, level, optname, optval);
+		setSockOpt(level, optname, optval);
 	}
 	
 	public abstract static class CanFilter {
@@ -107,6 +114,6 @@ public abstract class CanSocket implements Closeable {
 
 	@Override
 	public void close() throws IOException {
-                mClose(mFd);
+               closeSocket();
         }	
 }

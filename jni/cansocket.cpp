@@ -24,6 +24,8 @@ extern "C" {
 #endif
 
 static const int ERRNO_BUFFER_LEN = 1024;
+jfieldID socketID;
+jfieldID ifIndexID;
 
 static void throwException(JNIEnv *env, const std::string& exception_name,
 			   const std::string& msg)
@@ -66,16 +68,30 @@ static void throwIllegalArgumentException(JNIEnv *env, const std::string& messag
 	throwException(env, "java/lang/IllegalArgumentException", message);
 }
 
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_mClose
-(JNIEnv *env, jclass obj, jint fd)
+/*
+ * This function initializes two global variables and provide
+ * access and linkage to private members in corresponding
+ * CanSocket class *
+ */
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_initIds
+(JNIEnv *env, jclass cls)
 {
-	if (close(fd) == -1) {
+	socketID = env->GetFieldID(cls, "mFd", "I");
+	ifIndexID = env->GetFieldID(cls, "mIfIndex", "I");
+}
+
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_closeSocket
+(JNIEnv *env, jobject obj)
+{
+	jint sockfd = env->GetIntField(obj, socketID);
+	if (close(sockfd) == -1) {
 		throwIOExceptionErrno(env, errno);
 	}
 }
 
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_mOpenSocket
-(JNIEnv *env, jclass obj, jint socktype, jint protocol)
+
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_openSocket
+(JNIEnv *env, jobject obj, jint socktype, jint protocol)
 {
 	const int fd = socket(PF_CAN, socktype, protocol);
         if (fd != -1) {
@@ -85,9 +101,10 @@ JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_mOpenSocket
         return -1;
 }
 
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_mGetIfIndex
-(JNIEnv *env, jclass obj, jint fd, jstring ifName)
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_getIfIndex
+(JNIEnv *env, jobject obj, jstring ifName)
 {
+	jint sockfd = env->GetIntField(obj, socketID);
 	struct ifreq ifreq;
 	const jsize ifNameSize = env->GetStringUTFLength(ifName);
 	if (ifNameSize > IFNAMSIZ-1) {
@@ -103,35 +120,42 @@ JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_mGetIfIndex
 		return -1;
 	}
 	/* discover interface id */
-	const int err = ioctl(fd, SIOCGIFINDEX, &ifreq);
+	const int err = ioctl(sockfd, SIOCGIFINDEX, &ifreq);
 	if (err == -1) {
 		throwIOExceptionErrno(env, errno);
 		return -1;
 	} else {
 		return ifreq.ifr_ifindex;
 	}
+	
 }
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_mbind
-(JNIEnv *env, jclass obj, jint fd, jint ifIndex)
+
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_bindToSocket
+(JNIEnv *env, jobject obj)
 {
+	jint sockfd = env->GetIntField(obj, socketID);
+	jint ifindex = env->GetIntField(obj, ifIndexID);
 	struct sockaddr_can addr;
+	/* bind with no filtering */
 	addr.can_family = AF_CAN;
-	addr.can_ifindex = ifIndex;
+	addr.can_ifindex = ifindex;
 	addr.can_addr.j1939.name = J1939_NO_NAME;
 	addr.can_addr.j1939.addr = J1939_NO_ADDR;
 	addr.can_addr.j1939.pgn = J1939_NO_PGN;
 	
-	if (bind(fd, reinterpret_cast<struct sockaddr *>(&addr), sizeof(addr)) != 0) {
+	if (bind(sockfd, reinterpret_cast<struct sockaddr *>(&addr),
+		sizeof(addr)) != 0) {
 		throwIOExceptionErrno(env, errno);
 	}
 }
 
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_mSetsockopt
-(JNIEnv *env, jclass obj, jint sockfd, jint level, jint optname, jint optval)
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_setSockOpt
+(JNIEnv *env, jobject obj, jint level, jint optname, jint optval)
 {
+	jint sockfd = env->GetIntField(obj, socketID);
 	const int _optval = optval;
-
-	if (setsockopt(sockfd, level, optname, &_optval, sizeof(_optval)) == -1) {
+	if (setsockopt(sockfd, level, optname, &_optval,
+		sizeof(_optval)) == -1) {
 		throwIOExceptionErrno(env, errno);
 	}	
 }

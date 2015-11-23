@@ -9,43 +9,51 @@ extern "C" {
 #endif
 /*
  * Class:     org_isoblue_can_CanSocket
- * Method:    mClose
- * Signature: (I)V
+ * Method:    initIds
+ * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_mClose
-  (JNIEnv *, jclass, jint);
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_initIds
+  (JNIEnv *, jclass);
 
 /*
  * Class:     org_isoblue_can_CanSocket
- * Method:    mOpenSocket
+ * Method:    closeSocket
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_closeSocket
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_isoblue_can_CanSocket
+ * Method:    openSocket
  * Signature: (II)I
  */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_mOpenSocket
-  (JNIEnv *, jclass, jint, jint);
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_openSocket
+  (JNIEnv *, jobject, jint, jint);
 
 /*
  * Class:     org_isoblue_can_CanSocket
- * Method:    mGetIfIndex
- * Signature: (ILjava/lang/String;)I
+ * Method:    getIfIndex
+ * Signature: (Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_mGetIfIndex
-  (JNIEnv *, jclass, jint, jstring);
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_getIfIndex
+  (JNIEnv *, jobject, jstring);
 
 /*
  * Class:     org_isoblue_can_CanSocket
- * Method:    mbind
- * Signature: (II)V
+ * Method:    bindToSocket
+ * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_mbind
-  (JNIEnv *, jclass, jint, jint);
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_bindToSocket
+  (JNIEnv *, jobject);
 
 /*
  * Class:     org_isoblue_can_CanSocket
- * Method:    mSetsockopt
- * Signature: (IIII)V
+ * Method:    setSockOpt
+ * Signature: (III)V
  */
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_mSetsockopt
-  (JNIEnv *, jclass, jint, jint, jint, jint);
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_setSockOpt
+  (JNIEnv *, jobject, jint, jint, jint);
 
 #ifdef __cplusplus
 }

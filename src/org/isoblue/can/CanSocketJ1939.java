@@ -34,8 +34,7 @@ public class CanSocketJ1939 extends CanSocket {
 	private static final int SO_PRIORITY = mFetch("PRIORITY");
 
 	public CanSocketJ1939() throws IOException {
-		super(SOCK_DGRAM, CAN_J1939);
-		//this("ALL");
+		this("all");
 	}
 	
 	public CanSocketJ1939(final String ifName) throws IOException {
