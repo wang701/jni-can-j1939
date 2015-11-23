@@ -65,7 +65,7 @@ static void throwOutOfMemoryError(JNIEnv *env, const std::string& message)
     	throwException(env, "java/lang/OutOfMemoryError", message);
 }
 
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_mFetch
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_fetch
 (JNIEnv *env, jclass obj, jstring param)
 {
     	const char *str = env->GetStringUTFChars(param, NULL);
@@ -112,7 +112,7 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_initIds
 	sockID = env->GetFieldID(cls, "mFd", "I");	
 }
 
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_mSetJ1939filter
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_setJ1939Filter
 (JNIEnv *env, jobject obj, jlongArray names, jintArray addrs, jintArray pgns)
 {
 	int i;
@@ -150,4 +150,10 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_mSetJ1939filter
 	}
 
 	free(filt);
+}
+
+JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvMsg
+(JNIEnv *env, jobject obj)
+{
+
 }

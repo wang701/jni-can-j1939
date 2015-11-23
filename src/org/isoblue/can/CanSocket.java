@@ -116,6 +116,9 @@ public abstract class CanSocket implements Closeable {
 		return getSockOpt(level, optname);
 	}
 	
+	public abstract static class CanFrame {
+	}
+	
 	public abstract static class CanFilter {
 	}
 

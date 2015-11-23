@@ -21,17 +21,18 @@ import java.util.Iterator;
 
 public class CanSocketJ1939 extends CanSocket {
 
-	private static native int mFetch(final String param);
+	private static native int fetch(final String param);
 	private static native void initIds();
-	private native void mSetJ1939filter(long[] names,
+	private native void setJ1939Filter(long[] names,
 		int[] addrs, int[] pgns);
-	private static final int CAN_J1939 = mFetch("CAN_J1939");
-	private static final int SOCK_DGRAM = mFetch("SOCK_DGRAM");
-	private static final int SOL_CAN_J1939 = mFetch("SOL");
-	private static final int SO_J1939_FILTER = mFetch("FILTER");
-	private static final int SO_J1939_PROMISC = mFetch("PROMISC");
-	private static final int SO_J1939_RECV_OWN = mFetch("RECVOWN");
-	private static final int SO_PRIORITY = mFetch("PRIORITY");
+	private native Frame recvMsg();
+	private static final int CAN_J1939 = fetch("CAN_J1939");
+	private static final int SOCK_DGRAM = fetch("SOCK_DGRAM");
+	private static final int SOL_CAN_J1939 = fetch("SOL");
+	private static final int SO_J1939_FILTER = fetch("FILTER");
+	private static final int SO_J1939_PROMISC = fetch("PROMISC");
+	private static final int SO_J1939_RECV_OWN = fetch("RECVOWN");
+	private static final int SO_PRIORITY = fetch("PRIORITY");
 
 	public CanSocketJ1939() throws IOException {
 		this("all");
@@ -75,6 +76,33 @@ public class CanSocketJ1939 extends CanSocket {
 		}
 	}
 	
+	public static class Frame extends CanSocket.CanFrame {
+		protected final String ifname;
+		protected final long name;
+		protected final int addr;
+		protected final int pgn;
+		protected final int len;
+		protected final int priority;
+		protected final byte[] data;
+		
+		public Frame(final String ifname, final long name,
+			final int addr, final int pgn, final int len,
+			final int priority, final byte[] data) {
+			this.ifname = ifname;
+			this.name = name;
+			this.addr = addr;
+			this.pgn = pgn;
+			this.len = len;
+			this.priority = priority;
+			this.data = data;
+		}
+	}
+	
+	public Frame recvmsg() throws IOException {
+		return recvMsg();
+	}
+
+	
 	public void setfilter(Collection<Filter> filter) 
 		throws IOException, IllegalArgumentException {
 		long[] names = new long[filter.size()];
@@ -97,7 +125,7 @@ public class CanSocketJ1939 extends CanSocket {
 			pgns[i] = filt.pgn;
 			i++;
 		}
-		mSetJ1939filter(names, addrs, pgns);	
+		setJ1939Filter(names, addrs, pgns);	
 	} 
 }
 

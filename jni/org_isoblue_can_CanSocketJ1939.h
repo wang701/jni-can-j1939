@@ -9,10 +9,10 @@ extern "C" {
 #endif
 /*
  * Class:     org_isoblue_can_CanSocketJ1939
- * Method:    mFetch
+ * Method:    fetch
  * Signature: (Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_mFetch
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_fetch
   (JNIEnv *, jclass, jstring);
 
 /*
@@ -25,11 +25,19 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_initIds
 
 /*
  * Class:     org_isoblue_can_CanSocketJ1939
- * Method:    mSetJ1939filter
+ * Method:    setJ1939Filter
  * Signature: ([J[I[I)V
  */
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_mSetJ1939filter
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_setJ1939Filter
   (JNIEnv *, jobject, jlongArray, jintArray, jintArray);
+
+/*
+ * Class:     org_isoblue_can_CanSocketJ1939
+ * Method:    recvMsg
+ * Signature: ()Lorg/isoblue/can/CanSocketJ1939/Frame;
+ */
+JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvMsg
+  (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }
