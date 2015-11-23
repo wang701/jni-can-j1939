@@ -23,7 +23,7 @@ public class CanSocketJ1939 extends CanSocket {
 
 	private static native int mFetch(final String param);
 	private static native void mSetJ1939filter(final int fd,
-		long[] names, int[] addrs);
+		long[] names, int[] addrs, int[] pgns);
 	private static final int CAN_J1939 = mFetch("CAN_J1939");
 	private static final int SOCK_DGRAM = mFetch("SOCK_DGRAM");
 	private static final int SOL_CAN_J1939 = mFetch("SOL");
@@ -52,30 +52,35 @@ public class CanSocketJ1939 extends CanSocket {
 		super.setsockopt(SOL_CAN_J1939, SO_PRIORITY, priority);	
 	}
 
-	public class J1939Filter extends CanSocket.CanFilter {
+	public static class J1939Filter extends CanSocket.CanFilter {
 		protected final long name;
 		protected final int addr;
+		protected final int pgn;
 		
-		public J1939Filter(final long name, final int addr) {
+		public J1939Filter(final long name, final int addr,
+			final int pgn) {
 			this.name = name;
 			this.addr = addr;
+			this.pgn = pgn;
 		}
-			
 	}
 	
 	public void setfilter(Collection<J1939Filter> filter) 
 		throws IOException {
 		long[] names = new long[filter.size()];
 		int[] addrs = new int[filter.size()];
+		int[] pgns = new int[filter.size()];
 		int i = 0;
 		Iterator<J1939Filter> it = filter.iterator();
 		while (it.hasNext()) {
+			// TODO: check if name, addr, pgn are valid values
 			J1939Filter filt = it.next();
 			names[i] = filt.name;
 			addrs[i] = filt.addr;
+			pgns[i] = filt.pgn;
 			i++;
 		}
-		mSetJ1939filter(super.getmFd(), names, addrs);	
+		mSetJ1939filter(super.getmFd(), names, addrs, pgns);	
 	} 
 }
 

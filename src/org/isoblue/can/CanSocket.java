@@ -102,13 +102,7 @@ public abstract class CanSocket implements Closeable {
 		mSetsockopt(mFd, level, optname, optval);
 	}
 
-	//public void setJ1939filter(final int level, final int optname,
-		//final long name, final int addr)
-		//throws IOException {
-		//mSetJ1939filter(level, optname, name, addr);
-	//}
-	
-	public abstract class CanFilter {
+	public abstract static class CanFilter {
 	}
 
 	@Override

@@ -66,11 +66,6 @@ static void throwIllegalArgumentException(JNIEnv *env, const std::string& messag
 	throwException(env, "java/lang/IllegalArgumentException", message);
 }
 
-static void throwOutOfMemoryError(JNIEnv *env, const std::string& message)
-{
-    	throwException(env, "java/lang/OutOfMemoryError", message);
-}
-
 JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_mClose
 (JNIEnv *env, jclass obj, jint fd)
 {
