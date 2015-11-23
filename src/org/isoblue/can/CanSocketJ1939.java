@@ -20,7 +20,9 @@ import java.util.Set;
 public class CanSocketJ1939 extends CanSocket {
 
 	private static native int mFetch(final String param);
-	private static native void mSetfilter(final long name, final int addr);
+	private static native void mSetJ1939filter(final int fd,
+		final int level, final int optname,
+		final long name, final int addr);
 	private static final int CAN_J1939 = mFetch("CAN_J1939");
 	private static final int SOCK_DGRAM = mFetch("SOCK_DGRAM");
 	private static final int SOL_CAN_J1939 = mFetch("SOL");
@@ -50,9 +52,10 @@ public class CanSocketJ1939 extends CanSocket {
 	}	
 	
 	@Override
-	public void setJ1939filter(final long name, final int addr)
+	public void setfilter(final int level, final int optname,
+		final long name, final int addr)
 		throws IOException {
-		mSetJ1939filter(name, addr);	
+		mSetJ1939filter(super.getmFd(), level, optname, name, addr);	
 	} 
 }
 

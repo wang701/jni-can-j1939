@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_mFetch
   (JNIEnv *, jclass, jstring);
 
+/*
+ * Class:     org_isoblue_can_CanSocketJ1939
+ * Method:    mSetJ1939filter
+ * Signature: (IIIJI)V
+ */
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_mSetJ1939filter
+  (JNIEnv *, jclass, jint, jint, jint, jlong, jint);
+
 #ifdef __cplusplus
 }
 #endif

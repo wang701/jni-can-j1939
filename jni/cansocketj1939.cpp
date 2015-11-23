@@ -28,27 +28,35 @@ JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_mFetch
 {
     	const char *str = env->GetStringUTFChars(param, NULL);
 	if (strcmp(str, "CAN_J1939") == 0) {
+		env->ReleaseStringUTFChars(param, str);
 		return CAN_J1939;
 	}
 	else if (strcmp(str, "SOCK_DGRAM") == 0) {
+		env->ReleaseStringUTFChars(param, str);
 		return SOCK_DGRAM;
 	}
 	else if (strcmp(str, "SOL") == 0) {
+		env->ReleaseStringUTFChars(param, str);
 		return SOL_CAN_J1939;
 	}
 	else if (strcmp(str, "FILTER") == 0) {
+		env->ReleaseStringUTFChars(param, str);
 		return SO_J1939_FILTER;
 	}
 	else if (strcmp(str, "PROMISC") == 0) {
+		env->ReleaseStringUTFChars(param, str);
 		return SO_J1939_PROMISC;
 	}
 	else if (strcmp(str, "RECVOWN") == 0) {
+		env->ReleaseStringUTFChars(param, str);
 		return SO_J1939_RECV_OWN;
 	}
 	else if (strcmp(str, "PRIORITY") == 0) {
+		env->ReleaseStringUTFChars(param, str);
 		return SO_PRIORITY;
 	}
 
+	env->ReleaseStringUTFChars(param, str);
 	return -1;
 }
 

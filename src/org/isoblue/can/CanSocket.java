@@ -100,9 +100,15 @@ public abstract class CanSocket implements Closeable {
 		final int optval) throws IOException {
 		mSetsockopt(mFd, level, optname, optval);
 	}
+
+	//public void setJ1939filter(final int level, final int optname,
+		//final long name, final int addr)
+		//throws IOException {
+		//mSetJ1939filter(level, optname, name, addr);
+	//}
 	
-	public abstract void setJ1939filter(final long name, final int addr)
-		throws IOException;
+	public abstract void setfilter(final int level, final int optname,
+		final long name, final int addr) throws IOException;
 	
 	@Override
 	public void close() throws IOException {
