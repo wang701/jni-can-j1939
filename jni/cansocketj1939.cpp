@@ -24,6 +24,7 @@ extern "C" {
 #endif
 
 static const int ERRNO_BUFFER_LEN = 1024;
+jfieldID sockID;
 
 static void throwException(JNIEnv *env, const std::string& exception_name,
 			   const std::string& msg)
@@ -52,6 +53,16 @@ static void throwIOExceptionErrno(JNIEnv *env, const int exc_errno)
 	} else {
 		throwIOExceptionMsg(env, std::string(msg));
 	}
+}
+
+static void throwIllegalArgumentException(JNIEnv *env, const std::string& message)
+{
+	throwException(env, "java/lang/IllegalArgumentException", message);
+}
+
+static void throwOutOfMemoryError(JNIEnv *env, const std::string& message)
+{
+    	throwException(env, "java/lang/OutOfMemoryError", message);
 }
 
 JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_mFetch
@@ -86,22 +97,37 @@ JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_mFetch
 		env->ReleaseStringUTFChars(param, str);
 		return SO_PRIORITY;
 	}
+	else {
+		throwIllegalArgumentException(env,
+			"fetch argument is invalid");		
+	}
 
 	env->ReleaseStringUTFChars(param, str);
 	return -1;
 }
 
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_initIds
+(JNIEnv *env, jclass cls)
+{
+	sockID = env->GetFieldID(cls, "mFd", "I");	
+}
+
 JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_mSetJ1939filter
-(JNIEnv *env, jclass obj, jint fd, jlongArray names, jintArray addrs, jintArray pgns)
+(JNIEnv *env, jobject obj, jlongArray names, jintArray addrs, jintArray pgns)
 {
 	int i;
-	// get the array length
+	/* get the array length */
 	jsize len = env->GetArrayLength(names);	
 
-	struct j1939_filter filt[] = {0};
-	memset(&filt, 0, sizeof(filt));
+	struct j1939_filter* filt = (struct j1939_filter*) malloc(
+		len * sizeof(struct j1939_filter));
+	if (filt == NULL) {
+		throwOutOfMemoryError(env, "could not allocate filters");		
+	}
+	/*get the sock fd */
+	jint sockfd = env->GetIntField(obj, sockID);
 
-	// fill up the filter(s)
+	/* fill up the filter(s) */
 	jlong *name = env->GetLongArrayElements(names, NULL);
 	jint *addr = env->GetIntArrayElements(addrs, NULL);
 	jint *pgn = env->GetIntArrayElements(pgns, NULL);
@@ -117,8 +143,11 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_mSetJ1939filter
 	env->ReleaseIntArrayElements(addrs, addr, 0);	
 	env->ReleaseIntArrayElements(pgns, pgn, 0);
 
-	// apply filters to socket
-	if (setsockopt(fd, SOL_CAN_J1939, SO_J1939_FILTER, &filt, sizeof(filt)) == -1) {
+	/* apply filters to socket */
+	if (setsockopt(sockfd, SOL_CAN_J1939, SO_J1939_FILTER, filt,
+		 len * sizeof(struct j1939_filter)) == -1) {
 		throwIOExceptionErrno(env, errno);
 	}
+
+	free(filt);
 }

@@ -101,7 +101,7 @@ public abstract class CanSocket implements Closeable {
 		final int optval) throws IOException {
 		mSetsockopt(mFd, level, optname, optval);
 	}
-
+	
 	public abstract static class CanFilter {
 	}
 
