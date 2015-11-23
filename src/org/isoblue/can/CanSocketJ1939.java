@@ -13,16 +13,17 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Iterator;
 
 public class CanSocketJ1939 extends CanSocket {
 
 	private static native int mFetch(final String param);
 	private static native void mSetJ1939filter(final int fd,
-		final int level, final int optname,
-		final long name, final int addr);
+		long[] names, int[] addrs);
 	private static final int CAN_J1939 = mFetch("CAN_J1939");
 	private static final int SOCK_DGRAM = mFetch("SOCK_DGRAM");
 	private static final int SOL_CAN_J1939 = mFetch("SOL");
@@ -49,13 +50,32 @@ public class CanSocketJ1939 extends CanSocket {
 
 	public void setPriority(final int priority) throws IOException {
 		super.setsockopt(SOL_CAN_J1939, SO_PRIORITY, priority);	
-	}	
+	}
+
+	public class J1939Filter extends CanSocket.CanFilter {
+		protected final long name;
+		protected final int addr;
+		
+		public J1939Filter(final long name, final int addr) {
+			this.name = name;
+			this.addr = addr;
+		}
+			
+	}
 	
-	@Override
-	public void setfilter(final int level, final int optname,
-		final long name, final int addr)
+	public void setfilter(Collection<J1939Filter> filter) 
 		throws IOException {
-		mSetJ1939filter(super.getmFd(), level, optname, name, addr);	
+		long[] names = new long[filter.size()];
+		int[] addrs = new int[filter.size()];
+		int i = 0;
+		Iterator<J1939Filter> it = filter.iterator();
+		while (it.hasNext()) {
+			J1939Filter filt = it.next();
+			names[i] = filt.name;
+			addrs[i] = filt.addr;
+			i++;
+		}
+		mSetJ1939filter(super.getmFd(), names, addrs);	
 	} 
 }
 

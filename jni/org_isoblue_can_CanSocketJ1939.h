@@ -18,10 +18,10 @@ JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_mFetch
 /*
  * Class:     org_isoblue_can_CanSocketJ1939
  * Method:    mSetJ1939filter
- * Signature: (IIIJI)V
+ * Signature: (I[J[I)V
  */
 JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_mSetJ1939filter
-  (JNIEnv *, jclass, jint, jint, jint, jlong, jint);
+  (JNIEnv *, jclass, jint, jlongArray, jintArray);
 
 #ifdef __cplusplus
 }

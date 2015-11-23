@@ -60,3 +60,8 @@ JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_mFetch
 	return -1;
 }
 
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_mSetJ1939filter
+(JNIEnv *env, jclass obj, jint fd, jlongArray names, jintArray addrs)
+{
+	
+}

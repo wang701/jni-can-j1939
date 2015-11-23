@@ -13,6 +13,7 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
@@ -107,9 +108,9 @@ public abstract class CanSocket implements Closeable {
 		//mSetJ1939filter(level, optname, name, addr);
 	//}
 	
-	public abstract void setfilter(final int level, final int optname,
-		final long name, final int addr) throws IOException;
-	
+	public abstract class CanFilter {
+	}
+
 	@Override
 	public void close() throws IOException {
                 mClose(mFd);
