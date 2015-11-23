@@ -65,11 +65,9 @@ public class CanSocketTest {
         	}
    	}	
 
-	//@Test
-	//public void testJ1939Create() throws IOException {
-		//final CanSocketJ1939 socket = new CanSocketJ1939();
-		//socket.close();
-	//}
+	public void printRet(final int ret) {
+		System.out.println("\n" + ret);	
+	}
 
 	@Test
 	public void testJ1939BindNoFilter() throws IOException {
@@ -94,6 +92,17 @@ public class CanSocketTest {
 	public void testJ1939SetRecvown() throws IOException {
 		final CanSocketJ1939 socket = new CanSocketJ1939("can0");
 		socket.setRecvown();
+		socket.close();
+	}
+
+	@Test
+	public void testJ1939GeSockopt() throws IOException {
+		final CanSocketJ1939 socket = new CanSocketJ1939("can0");
+		socket.setRecvown();
+		final int recvOn = socket.getRecvown();
+		final int promiscOn = socket.getPromisc();
+		printRet(recvOn);
+		printRet(promiscOn);
 		socket.close();
 	}
 

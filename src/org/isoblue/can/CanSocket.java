@@ -31,6 +31,8 @@ public abstract class CanSocket implements Closeable {
 	private native void bindToSocket() throws IOException;
 	private native void setSockOpt(final int level,
 		final int optname, final int optval) throws IOException;
+	private native int getSockOpt(final int level, final int optname)
+		throws IOException;
 
 	static {
 		final String LIB_CAN_INTERFACE = "can";
@@ -107,6 +109,11 @@ public abstract class CanSocket implements Closeable {
         public void setsockopt(final int level, final int optname,
 		final int optval) throws IOException {
 		setSockOpt(level, optname, optval);
+	}
+	
+	public int getsockopt(final int level, final int optname)
+		throws IOException {
+		return getSockOpt(level, optname);
 	}
 	
 	public abstract static class CanFilter {

@@ -55,6 +55,14 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_bindToSocket
 JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_setSockOpt
   (JNIEnv *, jobject, jint, jint, jint);
 
+/*
+ * Class:     org_isoblue_can_CanSocket
+ * Method:    getSockOpt
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_getSockOpt
+  (JNIEnv *, jobject, jint, jint);
+
 #ifdef __cplusplus
 }
 #endif

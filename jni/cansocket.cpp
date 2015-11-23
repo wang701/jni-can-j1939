@@ -159,3 +159,21 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_setSockOpt
 		throwIOExceptionErrno(env, errno);
 	}	
 }
+
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_getSockOpt
+(JNIEnv *env, jobject obj, jint level, jint optname)
+{
+	int _stat = 0;
+	jint sockfd = env->GetIntField(obj, socketID);
+	socklen_t len = sizeof(_stat);
+	if (getsockopt(sockfd, level, optname, &_stat, &len) == -1) {
+		throwIOExceptionErrno(env, errno);
+	}
+	if (len != sizeof(_stat)) {
+		throwIllegalArgumentException(env,
+			"setsockopt return size is different");
+		return -1;
+	}
+	return _stat;	
+
+}

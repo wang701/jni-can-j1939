@@ -46,8 +46,16 @@ public class CanSocketJ1939 extends CanSocket {
 		super.setsockopt(SOL_CAN_J1939, SO_J1939_PROMISC, 1);	
 	}	
 
+	public int getPromisc() throws IOException {
+		return super.getsockopt(SOL_CAN_J1939, SO_J1939_PROMISC);
+	}	
+
 	public void setRecvown() throws IOException {
 		super.setsockopt(SOL_CAN_J1939, SO_J1939_RECV_OWN, 1);	
+	}	
+
+	public int getRecvown() throws IOException {
+		return super.getsockopt(SOL_CAN_J1939, SO_J1939_RECV_OWN);	
 	}	
 
 	public void setPriority(final int priority) throws IOException {
