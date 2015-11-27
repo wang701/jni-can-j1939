@@ -117,7 +117,7 @@ public class CanSocketTest {
 	
 	@Test
 	public void testJ1939Recv() throws IOException {
-		final CanSocketJ1939 socket = new CanSocketJ1939("can0");
+		final CanSocketJ1939 socket = new CanSocketJ1939("all");
 		socket.setPromisc();
 		socket.setTimestamp();
 		Filter f1 = new Filter(0, 32, 61444);
@@ -127,9 +127,16 @@ public class CanSocketTest {
 		filters.add(f2);
 		socket.setfilter(filters);
 		while (true) {
-			Frame frame = socket.recvmsg();
-			frame.print(1);
+			if ((socket.select(10)) == 0) {
+				Frame frame = socket.recvmsg();
+				frame.print(1);
+			} else {
+				System.out.println(
+				"\nno data after 10 secs");
+				break;
+			}
 		}
+		socket.close();
 	}
 
 

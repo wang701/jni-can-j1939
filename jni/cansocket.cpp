@@ -158,3 +158,27 @@ JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_getSockOpt
 	return _stat;	
 
 }
+
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_selectFd
+(JNIEnv *env, jobject obj, jint timeout)
+{
+	const int _timeout = timeout;
+	int rv;
+	struct timeval to = { 0 };
+	fd_set readfd;
+	to.tv_sec = _timeout;
+	jint sockfd = env->GetIntField(obj, socketID);
+
+	FD_ZERO(&readfd);
+	FD_SET(sockfd, &readfd);
+	rv = select(sockfd + 1, &readfd, NULL, NULL, &to);	
+	
+	if (rv == -1) {
+		throwIOExceptionErrno(env, errno);
+		return -2;
+	} else if (rv == 0) {
+		return -1;
+	}
+
+	return 0;
+}

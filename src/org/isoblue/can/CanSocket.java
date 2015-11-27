@@ -32,7 +32,7 @@ public abstract class CanSocket implements Closeable {
 		final int optname, final int optval) throws IOException;
 	private native int getSockOpt(final int level, final int optname)
 		throws IOException;
-	private native int selectfd(final int timeout)
+	private native int selectFd(final int timeout)
 		throws IOException;
 
 	static {
@@ -119,7 +119,7 @@ public abstract class CanSocket implements Closeable {
 	}
 		
 	public int select(final int timeout) throws IOException {
-		return selectsock(timeout);	
+		return selectFd(timeout);	
 	}
 	
 	public abstract static class CanFrame {
