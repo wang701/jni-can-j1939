@@ -41,14 +41,6 @@ JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_getIfIndex
 
 /*
  * Class:     org_isoblue_can_CanSocket
- * Method:    bindToSocket
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_bindToSocket
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_isoblue_can_CanSocket
  * Method:    setSockOpt
  * Signature: (III)V
  */

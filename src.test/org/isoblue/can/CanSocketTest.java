@@ -15,6 +15,7 @@ import org.isoblue.can.CanSocket;
 import org.isoblue.can.CanSocketJ1939;
 import org.isoblue.can.CanSocket.CanFilter;
 import org.isoblue.can.CanSocketJ1939.Filter;
+import org.isoblue.can.CanSocketJ1939.Frame;
 
 public class CanSocketTest {
 	private static final String CAN_INTERFACE_0 = "can0";
@@ -65,10 +66,6 @@ public class CanSocketTest {
         	}
    	}	
 
-	public void printRet(final int ret) {
-		System.out.println("\n" + ret);	
-	}
-
 	@Test
 	public void testJ1939BindNoFilter() throws IOException {
 		final CanSocketJ1939 socket = new CanSocketJ1939("can0");
@@ -101,8 +98,6 @@ public class CanSocketTest {
 		socket.setRecvown();
 		final int recvOn = socket.getRecvown();
 		final int promiscOn = socket.getPromisc();
-		printRet(recvOn);
-		printRet(promiscOn);
 		socket.close();
 	}
 
@@ -118,6 +113,20 @@ public class CanSocketTest {
 		filters.add(f3);
 		socket.setfilter(filters);
 		socket.close();	
+	}
+	
+	@Test
+	public void testJ1939Recv() throws IOException {
+		final CanSocketJ1939 socket = new CanSocketJ1939("can0");
+		socket.setPromisc();
+		Filter f1 = new Filter(0, 32, 61444);
+		ArrayList<Filter> filters = new ArrayList<Filter>();
+		filters.add(f1);
+		socket.setfilter(filters);
+		while (true) {
+			Frame frame = socket.recvmsg();
+			frame.print(1);
+		}
 	}
 
 

@@ -130,25 +130,6 @@ JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_getIfIndex
 	
 }
 
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_bindToSocket
-(JNIEnv *env, jobject obj)
-{
-	jint sockfd = env->GetIntField(obj, socketID);
-	jint ifindex = env->GetIntField(obj, ifIndexID);
-	struct sockaddr_can addr;
-	/* bind with no filtering */
-	addr.can_family = AF_CAN;
-	addr.can_ifindex = ifindex;
-	addr.can_addr.j1939.name = J1939_NO_NAME;
-	addr.can_addr.j1939.addr = J1939_NO_ADDR;
-	addr.can_addr.j1939.pgn = J1939_NO_PGN;
-	
-	if (bind(sockfd, reinterpret_cast<struct sockaddr *>(&addr),
-		sizeof(addr)) != 0) {
-		throwIOExceptionErrno(env, errno);
-	}
-}
-
 JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_setSockOpt
 (JNIEnv *env, jobject obj, jint level, jint optname, jint optval)
 {

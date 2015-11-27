@@ -26,6 +26,7 @@ public class CanSocketJ1939 extends CanSocket {
 	private native void setJ1939Filter(long[] names,
 		int[] addrs, int[] pgns);
 	private native Frame recvMsg();
+	private native void bindToSocket() throws IOException;
 	private static final int CAN_J1939 = fetch("CAN_J1939");
 	private static final int SOCK_DGRAM = fetch("SOCK_DGRAM");
 	private static final int SOL_CAN_J1939 = fetch("SOL");
@@ -41,6 +42,12 @@ public class CanSocketJ1939 extends CanSocket {
 	public CanSocketJ1939(final String ifName) throws IOException {
 		super(SOCK_DGRAM, CAN_J1939, ifName);
 		initIds();
+		bind();
+	}
+
+	@Override
+	public void bind() throws IOException {
+		bindToSocket();
 	}
 	
 	public void setPromisc() throws IOException {
@@ -77,24 +84,44 @@ public class CanSocketJ1939 extends CanSocket {
 	}
 	
 	public static class Frame extends CanSocket.CanFrame {
-		protected final String ifname;
+		protected final String ifName;
 		protected final long name;
 		protected final int addr;
 		protected final int pgn;
 		protected final int len;
 		protected final int priority;
 		protected final byte[] data;
+    		
+		private static String byteArrayToHex(byte[] a) {
+       			StringBuilder sb = new StringBuilder(a.length * 2);
+       			for(byte b: a)
+          			sb.append(String.format("%02x", b & 0xff));
+       			return sb.toString();
+    		}
 		
-		public Frame(final String ifname, final long name,
-			final int addr, final int pgn, final int len,
+		public Frame(final String ifName, final long name,
+			final int addr,	final int pgn, final int len,
 			final int priority, final byte[] data) {
-			this.ifname = ifname;
+			this.ifName = ifName;
 			this.name = name;
 			this.addr = addr;
 			this.pgn = pgn;
 			this.len = len;
 			this.priority = priority;
 			this.data = data;
+		}
+		
+		public void print(final int verbose) {
+			if (verbose == 1) {
+				System.out.printf("\n%s:%d,%d,%d,%d,%d,%s",
+					ifName, name, addr, pgn, len,
+					priority, byteArrayToHex(data));
+			}
+			else {
+				System.out.printf("\n%s:d,%d,%d,%s",
+					ifName, addr, pgn, len,
+					byteArrayToHex(data));
+			}
 		}
 	}
 	

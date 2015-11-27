@@ -39,6 +39,14 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_setJ1939Filter
 JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvMsg
   (JNIEnv *, jobject);
 
+/*
+ * Class:     org_isoblue_can_CanSocketJ1939
+ * Method:    bindToSocket
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_bindToSocket
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

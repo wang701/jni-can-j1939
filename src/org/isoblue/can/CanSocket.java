@@ -28,7 +28,6 @@ public abstract class CanSocket implements Closeable {
 		final int protocol) throws IOException;
 	private native int getIfIndex(final String ifName)
 		throws IOException;
-	private native void bindToSocket() throws IOException;
 	private native void setSockOpt(final int level,
 		final int optname, final int optval) throws IOException;
 	private native int getSockOpt(final int level, final int optname)
@@ -103,8 +102,9 @@ public abstract class CanSocket implements Closeable {
 		else {
 			this.mIfIndex = getIfIndex(ifName);	
 		}
-		bindToSocket();
 	}
+	
+	public abstract void bind() throws IOException; 
 
         public void setsockopt(final int level, final int optname,
 		final int optval) throws IOException {
