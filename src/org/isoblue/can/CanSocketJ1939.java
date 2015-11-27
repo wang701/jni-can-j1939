@@ -98,6 +98,8 @@ public class CanSocketJ1939 extends CanSocket {
 		protected String ifName;
 		protected long name;
 		protected int addr;
+		protected long dstName;
+		protected int dstAddr;
 		protected int pgn;
 		protected int len;
 		protected int priority;
@@ -112,11 +114,13 @@ public class CanSocketJ1939 extends CanSocket {
     		}
 		
 		public Frame(String ifName, long name, int addr,
-			int pgn, int len, int priority, byte[] data,
-			int timestamp) {
+			long dstName, int dstAddr, int pgn, int len,
+			int priority, byte[] data, int timestamp) {
 			this.ifName = ifName;
 			this.name = name;
 			this.addr = addr;
+			this.dstName = dstName;
+			this.dstAddr = dstAddr;
 			this.pgn = pgn;
 			this.len = len;
 			this.priority = priority;
@@ -126,8 +130,9 @@ public class CanSocketJ1939 extends CanSocket {
 		
 		public void print(final int verbose) {
 			if (verbose == 1) {
-				System.out.printf("\n%d,%s,%d,%d,%d,%d,%d,%s",
-					timestamp, ifName, name, addr, pgn, len,
+				System.out.printf("\n%d,%s,%d,%d,%d,%d,%d,%d,"
+					+ "%d,%s", timestamp, ifName, name,
+					addr, dstName, dstAddr, pgn, len,
 					priority, byteArrayToHex(data));
 			}
 			else {

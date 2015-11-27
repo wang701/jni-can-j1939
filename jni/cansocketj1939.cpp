@@ -181,14 +181,15 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvMsg
 	/* setup the msg and iov struct */
 	int ret;
 	unsigned int len;
-	uint8_t priority;	
+	uint8_t priority, dst_addr;
+	uint64_t dst_name;	
+	static uint8_t *buf;
 	struct sockaddr_can src;
 	struct ifreq ifr;
 	struct iovec iov;
 	struct msghdr msg;
 	struct cmsghdr *cmsg;
 	struct timeval tv = { 0 };
-	static uint8_t *buf;
 
 	buf = static_cast<uint8_t *>(malloc(RECV_BUFFER_LEN));
 	if (!buf) {
@@ -223,10 +224,16 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvMsg
 		switch (cmsg->cmsg_level) {
 			case SOL_SOCKET:
 				if(cmsg->cmsg_type == SO_TIMESTAMP)
-					memcpy(&tv, CMSG_DATA(cmsg), sizeof(tv));
+					memcpy(&tv, CMSG_DATA(cmsg),
+						sizeof(tv));
 				break;
 			case SOL_CAN_J1939:
-				if (cmsg->cmsg_type == SCM_J1939_PRIO)
+				if (cmsg->cmsg_type == SCM_J1939_DEST_ADDR)
+					dst_addr = *CMSG_DATA(cmsg);
+				else if (cmsg->cmsg_type == SCM_J1939_DEST_NAME)
+					memcpy(&dst_name, CMSG_DATA(cmsg),
+						cmsg->cmsg_len - CMSG_LEN(0));
+				else if (cmsg->cmsg_type == SCM_J1939_PRIO)
 					priority = *CMSG_DATA(cmsg);
 				break;
 		}
@@ -249,7 +256,7 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvMsg
 	const jmethodID j1939frame_cstr = env->GetMethodID(j1939frame_clazz,
 							"<init>",
 							"(Ljava/lang/String;"
-							"JIIII[BI)V");
+							"JIJIIII[BI)V");
 	if (j1939frame_cstr == NULL) {
 		return NULL;
 	}
@@ -270,6 +277,7 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvMsg
 					jifname,
 					src.can_addr.j1939.name,
 					src.can_addr.j1939.addr,
+					dst_name, dst_addr,
 					src.can_addr.j1939.pgn,
 					len, priority, data, timestamp);
 	
