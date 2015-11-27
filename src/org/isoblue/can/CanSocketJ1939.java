@@ -29,10 +29,12 @@ public class CanSocketJ1939 extends CanSocket {
 	private native void bindToSocket() throws IOException;
 	private static final int CAN_J1939 = fetch("CAN_J1939");
 	private static final int SOCK_DGRAM = fetch("SOCK_DGRAM");
-	private static final int SOL_CAN_J1939 = fetch("SOL");
+	private static final int SOL_SOCKET = fetch("SOL_SOCKET");
+	private static final int SOL_CAN_J1939 = fetch("SOL_J1939");
 	private static final int SO_J1939_FILTER = fetch("FILTER");
 	private static final int SO_J1939_PROMISC = fetch("PROMISC");
 	private static final int SO_J1939_RECV_OWN = fetch("RECVOWN");
+	private static final int SO_TIMESTAMP = fetch("TIMESTAMP");
 	private static final int SO_PRIORITY = fetch("PRIORITY");
 
 	public CanSocketJ1939() throws IOException {
@@ -69,6 +71,15 @@ public class CanSocketJ1939 extends CanSocket {
 	public void setPriority(final int priority) throws IOException {
 		super.setsockopt(SOL_CAN_J1939, SO_PRIORITY, priority);	
 	}
+
+	public void setTimestamp() throws IOException {
+		super.setsockopt(SOL_SOCKET, SO_TIMESTAMP, 1);	
+	}	
+
+	public int getTimestamp() throws IOException {
+		return super.getsockopt(SOL_SOCKET, SO_TIMESTAMP);
+	}	
+
 	
 	public static class Filter extends CanSocket.CanFilter {
 		protected final long name;
@@ -84,13 +95,14 @@ public class CanSocketJ1939 extends CanSocket {
 	}
 	
 	public static class Frame extends CanSocket.CanFrame {
-		protected final String ifName;
-		protected final long name;
-		protected final int addr;
-		protected final int pgn;
-		protected final int len;
-		protected final int priority;
-		protected final byte[] data;
+		protected String ifName;
+		protected long name;
+		protected int addr;
+		protected int pgn;
+		protected int len;
+		protected int priority;
+		protected byte[] data;
+		protected int timestamp;
     		
 		private static String byteArrayToHex(byte[] a) {
        			StringBuilder sb = new StringBuilder(a.length * 2);
@@ -99,9 +111,9 @@ public class CanSocketJ1939 extends CanSocket {
        			return sb.toString();
     		}
 		
-		public Frame(final String ifName, final long name,
-			final int addr,	final int pgn, final int len,
-			final int priority, final byte[] data) {
+		public Frame(String ifName, long name, int addr,
+			int pgn, int len, int priority, byte[] data,
+			int timestamp) {
 			this.ifName = ifName;
 			this.name = name;
 			this.addr = addr;
@@ -109,16 +121,17 @@ public class CanSocketJ1939 extends CanSocket {
 			this.len = len;
 			this.priority = priority;
 			this.data = data;
+			this.timestamp = timestamp;
 		}
 		
 		public void print(final int verbose) {
 			if (verbose == 1) {
-				System.out.printf("\n%s:%d,%d,%d,%d,%d,%s",
-					ifName, name, addr, pgn, len,
+				System.out.printf("\n%d,%s,%d,%d,%d,%d,%d,%s",
+					timestamp, ifName, name, addr, pgn, len,
 					priority, byteArrayToHex(data));
 			}
 			else {
-				System.out.printf("\n%s:d,%d,%d,%s",
+				System.out.printf("\n%s,d,%d,%d,%s",
 					ifName, addr, pgn, len,
 					byteArrayToHex(data));
 			}

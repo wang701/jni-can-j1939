@@ -119,9 +119,12 @@ public class CanSocketTest {
 	public void testJ1939Recv() throws IOException {
 		final CanSocketJ1939 socket = new CanSocketJ1939("can0");
 		socket.setPromisc();
+		socket.setTimestamp();
 		Filter f1 = new Filter(0, 32, 61444);
+		Filter f2 = new Filter(0, 51, 61443);
 		ArrayList<Filter> filters = new ArrayList<Filter>();
 		filters.add(f1);
+		filters.add(f2);
 		socket.setfilter(filters);
 		while (true) {
 			Frame frame = socket.recvmsg();

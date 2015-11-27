@@ -32,6 +32,8 @@ public abstract class CanSocket implements Closeable {
 		final int optname, final int optval) throws IOException;
 	private native int getSockOpt(final int level, final int optname)
 		throws IOException;
+	private native int selectfd(final int timeout)
+		throws IOException;
 
 	static {
 		final String LIB_CAN_INTERFACE = "can";
@@ -114,6 +116,10 @@ public abstract class CanSocket implements Closeable {
 	public int getsockopt(final int level, final int optname)
 		throws IOException {
 		return getSockOpt(level, optname);
+	}
+		
+	public int select(final int timeout) throws IOException {
+		return selectsock(timeout);	
 	}
 	
 	public abstract static class CanFrame {

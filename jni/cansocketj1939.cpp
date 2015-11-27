@@ -87,9 +87,13 @@ JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_fetch
 		env->ReleaseStringUTFChars(param, str);
 		return SOCK_DGRAM;
 	}
-	else if (strcmp(str, "SOL") == 0) {
+	else if (strcmp(str, "SOL_J1939") == 0) {
 		env->ReleaseStringUTFChars(param, str);
 		return SOL_CAN_J1939;
+	}
+	else if (strcmp(str, "SOL_SOCKET") == 0) {
+		env->ReleaseStringUTFChars(param, str);
+		return SOL_SOCKET;
 	}
 	else if (strcmp(str, "FILTER") == 0) {
 		env->ReleaseStringUTFChars(param, str);
@@ -106,6 +110,10 @@ JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_fetch
 	else if (strcmp(str, "PRIORITY") == 0) {
 		env->ReleaseStringUTFChars(param, str);
 		return SO_PRIORITY;
+	}
+	else if (strcmp(str, "TIMESTAMP") == 0) {
+		env->ReleaseStringUTFChars(param, str);
+		return SO_TIMESTAMP;
 	}
 	else {
 		throwIllegalArgumentException(env,
@@ -179,6 +187,7 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvMsg
 	struct iovec iov;
 	struct msghdr msg;
 	struct cmsghdr *cmsg;
+	struct timeval tv = { 0 };
 	static uint8_t *buf;
 
 	buf = static_cast<uint8_t *>(malloc(RECV_BUFFER_LEN));
@@ -212,21 +221,21 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvMsg
 	len = ret;
 	for (cmsg = CMSG_FIRSTHDR(&msg); cmsg; cmsg = CMSG_NXTHDR(&msg, cmsg)) {
 		switch (cmsg->cmsg_level) {
-		case SOL_SOCKET:
-			break;
-		case SOL_CAN_J1939:
-			//if (cmsg->cmsg_type == SCM_J1939_DEST_ADDR)
-				//dst_addr = *CMSG_DATA(cmsg);
-			//else if (cmsg->cmsg_type == SCM_J1939_DEST_NAME)
-				//memcpy(&dst_name, CMSG_DATA(cmsg),
-					//cmsg->cmsg_len - CMSG_LEN(0));
-			if (cmsg->cmsg_type == SCM_J1939_PRIO)
-				priority = *CMSG_DATA(cmsg);
-			break;
+			case SOL_SOCKET:
+				if(cmsg->cmsg_type == SO_TIMESTAMP)
+					memcpy(&tv, CMSG_DATA(cmsg), sizeof(tv));
+				break;
+			case SOL_CAN_J1939:
+				if (cmsg->cmsg_type == SCM_J1939_PRIO)
+					priority = *CMSG_DATA(cmsg);
+				break;
 		}
 	}
+	
+	/* find epoch timestamp */
+	jint timestamp = tv.tv_sec;
 
-	/* Find name of receive interface */
+	/* find name of receive interface */
 	ifr.ifr_ifindex = src.can_ifindex;
 	ioctl(sockfd, SIOCGIFNAME, &ifr);
 	jstring jifname = env->NewStringUTF(ifr.ifr_name);
@@ -240,7 +249,7 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvMsg
 	const jmethodID j1939frame_cstr = env->GetMethodID(j1939frame_clazz,
 							"<init>",
 							"(Ljava/lang/String;"
-							"JIIII[B)V");
+							"JIIII[BI)V");
 	if (j1939frame_cstr == NULL) {
 		return NULL;
 	}
@@ -262,7 +271,7 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvMsg
 					src.can_addr.j1939.name,
 					src.can_addr.j1939.addr,
 					src.can_addr.j1939.pgn,
-					len, priority, data);
+					len, priority, data, timestamp);
 	
 	free(buf);
 	return retobj;
