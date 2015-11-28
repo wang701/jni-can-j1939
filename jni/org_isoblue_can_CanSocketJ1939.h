@@ -47,6 +47,30 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvMsg
 JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_bindToSocket
   (JNIEnv *, jobject);
 
+/*
+ * Class:     org_isoblue_can_CanSocketJ1939
+ * Method:    sendMsg
+ * Signature: (Lorg/isoblue/can/CanSocketJ1939/Frame;)V
+ */
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_sendMsg
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     org_isoblue_can_CanSocketJ1939
+ * Method:    bindToAddr
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_bindToAddr
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     org_isoblue_can_CanSocketJ1939
+ * Method:    bindToName
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_bindToName
+  (JNIEnv *, jobject, jlong);
+
 #ifdef __cplusplus
 }
 #endif

@@ -27,7 +27,11 @@ public class CanSocketJ1939 extends CanSocket {
 		int[] addrs, int[] pgns);
 	private native Frame recvMsg();
 	private native void bindToSocket() throws IOException;
+	private native void sendMsg(Frame f) throws IOException;
+	private native void bindToAddr(final int addr) throws IOException;
+	private native void bindToName(final long name) throws IOException;
 	private static final int CAN_J1939 = fetch("CAN_J1939");
+	//private static final int J1939_NO_NAME = fetch("NO_NAME");
 	private static final int SOCK_DGRAM = fetch("SOCK_DGRAM");
 	private static final int SOL_SOCKET = fetch("SOL_SOCKET");
 	private static final int SOL_CAN_J1939 = fetch("SOL_J1939");
@@ -46,10 +50,33 @@ public class CanSocketJ1939 extends CanSocket {
 		initIds();
 		bind();
 	}
+	
+	public CanSocketJ1939(final String ifName, final int addr)
+		throws IOException {
+		super(SOCK_DGRAM, CAN_J1939, ifName);
+		initIds();
+		bindaddr(addr);	
+	}
+
+	public CanSocketJ1939(final String ifName, final long name)
+		throws IOException {
+		super(SOCK_DGRAM, CAN_J1939, ifName);
+		initIds();
+		bindname(name);	
+	}
 
 	@Override
 	public void bind() throws IOException {
 		bindToSocket();
+	}
+	
+	public void bindaddr(final int addr) throws IOException {
+		//TODO: make addr, name class members?
+		bindToAddr(addr);
+	}
+
+	public void bindname(final long name) throws IOException {
+		bindToName(name);
 	}
 	
 	public void setPromisc() throws IOException {
@@ -113,6 +140,7 @@ public class CanSocketJ1939 extends CanSocket {
        			return sb.toString();
     		}
 		
+		/* recv frame constructor */
 		public Frame(String ifName, long name, int addr,
 			long dstName, int dstAddr, int pgn, int len,
 			int priority, byte[] data, int timestamp) {
@@ -126,6 +154,13 @@ public class CanSocketJ1939 extends CanSocket {
 			this.priority = priority;
 			this.data = data;
 			this.timestamp = timestamp;
+		}
+		
+		/* send frame constructor */
+		public Frame(long dstName, int dstAddr, int pgn) {
+			this.dstName = dstName;
+			this.dstAddr = dstAddr;
+			this.pgn = pgn;
 		}
 		
 		public void print(final int verbose) {
@@ -147,6 +182,9 @@ public class CanSocketJ1939 extends CanSocket {
 		return recvMsg();
 	}
 
+	public void sendmsg(Frame f) throws IOException {
+		sendMsg(f);	
+	}
 	
 	public void setfilter(Collection<Filter> filter) 
 		throws IOException, IllegalArgumentException {

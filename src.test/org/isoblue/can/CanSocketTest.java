@@ -138,6 +138,12 @@ public class CanSocketTest {
 		}
 		socket.close();
 	}
-
-
+	
+	@Test
+	public void testJ1939Send() throws IOException {
+		final CanSocketJ1939 socket = new CanSocketJ1939("can0");
+		Frame f = new Frame(0, 48, 61444);
+		socket.sendmsg(f);
+		socket.close();
+	}
 }
