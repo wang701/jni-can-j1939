@@ -299,7 +299,46 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_bindToSocket
 	addr.can_addr.j1939.addr = J1939_NO_ADDR;
 	addr.can_addr.j1939.pgn = J1939_NO_PGN;
 	
-	if (bind(sockfd, reinterpret_cast<struct sockaddr *>(&addr),
+	if (bind(sockfd, reinterpret_cast<const sockaddr *>(&addr),
+		sizeof(addr)) != 0) {
+		throwIOExceptionErrno(env, errno);
+	}
+}
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_bindToAddr
+(JNIEnv *env, jobject obj, jint baddr)
+{
+	jint sockfd = env->GetIntField(obj, sockID);
+	jint ifindex = env->GetIntField(obj, ifIndID);
+	int _baddr = baddr;
+	struct sockaddr_can addr;
+	/* bind with no filtering */
+	addr.can_family = AF_CAN;
+	addr.can_ifindex = ifindex;
+	addr.can_addr.j1939.name = J1939_NO_NAME;
+	addr.can_addr.j1939.addr = _baddr;
+	addr.can_addr.j1939.pgn = J1939_NO_PGN;
+
+	printf("%d,%d\n", _baddr, baddr);	
+	if (bind(sockfd, reinterpret_cast<const sockaddr *>(&addr),
+		sizeof(addr)) != 0) {
+		throwIOExceptionErrno(env, errno);
+	}
+}
+
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_bindToName
+(JNIEnv *env, jobject obj, jlong name) 
+{
+	jint sockfd = env->GetIntField(obj, sockID);
+	jint ifindex = env->GetIntField(obj, ifIndID);
+	struct sockaddr_can addr;
+	/* bind with no filtering */
+	addr.can_family = AF_CAN;
+	addr.can_ifindex = ifindex;
+	addr.can_addr.j1939.name = name; 
+	addr.can_addr.j1939.addr = J1939_NO_ADDR;
+	addr.can_addr.j1939.pgn = J1939_NO_PGN;
+	
+	if (bind(sockfd, reinterpret_cast<const sockaddr *>(&addr),
 		sizeof(addr)) != 0) {
 		throwIOExceptionErrno(env, errno);
 	}
@@ -309,27 +348,37 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_sendMsg
 (JNIEnv *env, jobject obj, jobject frameobj)
 {
 	struct sockaddr_can addr;
-	static uint8_t *buf;
+	uint8_t *buf;
 	buf = static_cast<uint8_t *>(calloc(8, sizeof(uint8_t)));
+	if (buf == NULL) {
+		throwIOExceptionErrno(env, errno);
+	}
+	memset(buf, 0xaa, 8 * sizeof(uint8_t));
 	memset(&addr, 0, sizeof(addr));
 	
 	jint sockfd = env->GetIntField(obj, sockID);
-	//jclass frame_clazz = env->GetObjectClass(frameobj);
-	//jfieldID dstnameID = env->GetFieldID(env, frame_clazz, "dstName", "J");
-	//jfieldID dstaddrID = env->GetFieldID(frame_clazz, "dstAddr", "I");
-	//jfieldID pgnID = env->GetFieldID(frame_clazz, "pgn", "I");
-	//jlong dstname = env->GetLongField(frameobj, dstnameID);
-	//jint dstaddr = env->GetIntField(frameobj, dstaddrID);
-	//jint pgn = env->GetIntField(frameobj, pgnID);
+	jclass frame_clazz = env->GetObjectClass(frameobj);
+	jfieldID dstaddrID = env->GetFieldID(frame_clazz, "dstAddr", "I");
+	jfieldID pgnID = env->GetFieldID(frame_clazz, "pgn", "I");
+	jint dstaddr = env->GetIntField(frameobj, dstaddrID);
+	jint pgn = env->GetIntField(frameobj, pgnID);
 
+	addr.can_family = AF_CAN;
 	addr.can_addr.j1939.name = J1939_NO_NAME;
-	addr.can_addr.j1939.addr = 0x30;
-	addr.can_addr.j1939.pgn = 0x12300;
+	addr.can_addr.j1939.addr = dstaddr;
+	addr.can_addr.j1939.pgn = pgn;
+	printf("%d,%d\n", dstaddr, pgn);
 
-	if (sendto(sockfd, buf, sizeof(buf), 0,
-		reinterpret_cast<struct sockaddr *>(&addr),
+	if (connect(sockfd, reinterpret_cast<const sockaddr *>(&addr),
 		sizeof(addr)) < 0) {
-		free(buf);
 		throwIOExceptionErrno(env, errno);
 	}
+
+	printf("%p\n", buf);
+
+	if (send(sockfd, buf, 8 * sizeof(uint8_t), 0) < 0) {
+		throwIOExceptionErrno(env, errno);
+	}
+	free(buf);
 }
+

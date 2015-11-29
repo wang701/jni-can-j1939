@@ -157,7 +157,7 @@ public class CanSocketJ1939 extends CanSocket {
 		}
 		
 		/* send frame constructor */
-		public Frame(long dstName, int dstAddr, int pgn) {
+		public Frame(int dstAddr, int pgn) {
 			this.dstName = dstName;
 			this.dstAddr = dstAddr;
 			this.pgn = pgn;

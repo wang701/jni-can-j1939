@@ -78,6 +78,18 @@ public class CanSocketTest {
 		socket.close();
 	}
 
+	@Test	
+	public void testJ1939BindToAddr() throws IOException {
+		final CanSocketJ1939 socket = new CanSocketJ1939("can0", 0x45);
+		socket.close();
+	}
+
+	//@Test	
+	//public void testJ1939BindToName() throws IOException {
+		//final CanSocketJ1939 socket = new CanSocketJ1939("can0", 0x1234568);
+		//socket.close();
+	//}
+
 	@Test
 	public void testJ1939SetPromisc() throws IOException {
 		final CanSocketJ1939 socket = new CanSocketJ1939("can0");
@@ -127,12 +139,12 @@ public class CanSocketTest {
 		filters.add(f2);
 		socket.setfilter(filters);
 		while (true) {
-			if ((socket.select(10)) == 0) {
+			if ((socket.select(2)) == 0) {
 				Frame frame = socket.recvmsg();
 				frame.print(1);
 			} else {
 				System.out.println(
-				"\nno data after 10 secs");
+				"\nno data after 2 secs");
 				break;
 			}
 		}
@@ -141,8 +153,8 @@ public class CanSocketTest {
 	
 	@Test
 	public void testJ1939Send() throws IOException {
-		final CanSocketJ1939 socket = new CanSocketJ1939("can0");
-		Frame f = new Frame(0, 48, 61444);
+		final CanSocketJ1939 socket = new CanSocketJ1939("can0", 0x45);
+		Frame f = new Frame(48, 61444);
 		socket.sendmsg(f);
 		socket.close();
 	}
