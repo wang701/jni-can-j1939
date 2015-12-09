@@ -349,7 +349,6 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_sendMsg
 {
 	struct sockaddr_can addr;
 	jboolean iscopy;
-	int i;
 	memset(&addr, 0, sizeof(addr));
 	
 	jint sockfd = env->GetIntField(obj, sockID);
