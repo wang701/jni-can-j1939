@@ -362,11 +362,7 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_sendMsg
 	jobject dataobj = env->GetObjectField(frameobj, dataID);
 	jbyteArray data_arr = reinterpret_cast<jbyteArray>(dataobj);
 	jsize len = env->GetArrayLength(data_arr);
-	printf("\n%d\n",len);
 	jbyte *data = env->GetByteArrayElements(data_arr, &iscopy);
-	for (i = 0; i < 7; i++) {
-		printf("%d\n", data[i]);
-	}	
 
 	addr.can_family = AF_CAN;
 	addr.can_addr.j1939.name = J1939_NO_NAME;
