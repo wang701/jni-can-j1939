@@ -181,7 +181,8 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvMsg
 	/* setup the msg and iov struct */
 	int ret;
 	unsigned int len;
-	uint8_t priority, dst_addr;
+	uint8_t priority;
+	uint8_t dst_addr;
 	uint64_t dst_name;	
 	static uint8_t *buf;
 	struct sockaddr_can src;
@@ -318,7 +319,6 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_bindToAddr
 	addr.can_addr.j1939.addr = _baddr;
 	addr.can_addr.j1939.pgn = J1939_NO_PGN;
 
-	printf("%d,%d\n", _baddr, baddr);	
 	if (bind(sockfd, reinterpret_cast<const sockaddr *>(&addr),
 		sizeof(addr)) != 0) {
 		throwIOExceptionErrno(env, errno);
@@ -348,37 +348,40 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_sendMsg
 (JNIEnv *env, jobject obj, jobject frameobj)
 {
 	struct sockaddr_can addr;
-	uint8_t *buf;
-	buf = static_cast<uint8_t *>(calloc(8, sizeof(uint8_t)));
-	if (buf == NULL) {
-		throwIOExceptionErrno(env, errno);
-	}
-	memset(buf, 0xaa, 8 * sizeof(uint8_t));
+	jboolean iscopy;
+	int i;
 	memset(&addr, 0, sizeof(addr));
 	
 	jint sockfd = env->GetIntField(obj, sockID);
 	jclass frame_clazz = env->GetObjectClass(frameobj);
 	jfieldID dstaddrID = env->GetFieldID(frame_clazz, "dstAddr", "I");
 	jfieldID pgnID = env->GetFieldID(frame_clazz, "pgn", "I");
+	jfieldID dataID = env->GetFieldID(frame_clazz, "data", "[B");
 	jint dstaddr = env->GetIntField(frameobj, dstaddrID);
 	jint pgn = env->GetIntField(frameobj, pgnID);
+	jobject dataobj = env->GetObjectField(frameobj, dataID);
+	jbyteArray data_arr = reinterpret_cast<jbyteArray>(dataobj);
+	jsize len = env->GetArrayLength(data_arr);
+	printf("\n%d\n",len);
+	jbyte *data = env->GetByteArrayElements(data_arr, &iscopy);
+	for (i = 0; i < 7; i++) {
+		printf("%d\n", data[i]);
+	}	
 
 	addr.can_family = AF_CAN;
 	addr.can_addr.j1939.name = J1939_NO_NAME;
 	addr.can_addr.j1939.addr = dstaddr;
 	addr.can_addr.j1939.pgn = pgn;
-	printf("%d,%d\n", dstaddr, pgn);
 
 	if (connect(sockfd, reinterpret_cast<const sockaddr *>(&addr),
 		sizeof(addr)) < 0) {
 		throwIOExceptionErrno(env, errno);
 	}
 
-	printf("%p\n", buf);
-
-	if (send(sockfd, buf, 8 * sizeof(uint8_t), 0) < 0) {
+	if (send(sockfd, reinterpret_cast<uint8_t *>(data),
+		8 * sizeof(uint8_t), 0) < 0) {
 		throwIOExceptionErrno(env, errno);
 	}
-	free(buf);
+	env->ReleaseByteArrayElements(data_arr, data, 0);
 }
 

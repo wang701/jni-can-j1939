@@ -157,10 +157,10 @@ public class CanSocketJ1939 extends CanSocket {
 		}
 		
 		/* send frame constructor */
-		public Frame(int dstAddr, int pgn) {
-			this.dstName = dstName;
+		public Frame(int dstAddr, int pgn, byte[] data) {
 			this.dstAddr = dstAddr;
 			this.pgn = pgn;
+			this.data = data;
 		}
 		
 		public void print(final int verbose) {

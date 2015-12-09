@@ -37,6 +37,17 @@ public class CanSocketTest {
         	catch (Exception e) {}
     	}
 
+	public static byte[] hexStringToByteArray(String s) {
+    		int len = s.length();
+    		byte[] data = new byte[len / 2];
+    		for (int i = 0; i < len; i += 2) {
+        		data[i / 2] = (byte)
+				((Character.digit(s.charAt(i), 16) << 4)
+                             	+ Character.digit(s.charAt(i+1), 16));
+    		}
+    		return data;
+	}
+
     	private static String byteArrayToHex(byte[] a) {
        		StringBuilder sb = new StringBuilder(a.length * 2);
        		for(byte b: a)
@@ -154,7 +165,9 @@ public class CanSocketTest {
 	@Test
 	public void testJ1939Send() throws IOException {
 		final CanSocketJ1939 socket = new CanSocketJ1939("can0", 0x45);
-		Frame f = new Frame(48, 61444);
+	        byte[] payload = hexStringToByteArray("aaaaaaaaaaaaaaaa");
+		//System.out.println(Arrays.toString(payload));
+		Frame f = new Frame(48, 61444, payload);
 		socket.sendmsg(f);
 		socket.close();
 	}
