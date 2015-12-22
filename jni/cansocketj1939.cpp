@@ -171,7 +171,7 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_setJ1939Filter
 	free(filt);
 }
 
-JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvMsg
+JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvmsg
 (JNIEnv *env, jobject obj)
 {
 	/* get sock fd and ifindex */
@@ -344,7 +344,7 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_bindToName
 	}
 }
 
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_sendMsg
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_sendmsg
 (JNIEnv *env, jobject obj, jobject frameobj)
 {
 	struct sockaddr_can addr;
@@ -360,7 +360,6 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_sendMsg
 	jint pgn = env->GetIntField(frameobj, pgnID);
 	jobject dataobj = env->GetObjectField(frameobj, dataID);
 	jbyteArray data_arr = reinterpret_cast<jbyteArray>(dataobj);
-	jsize len = env->GetArrayLength(data_arr);
 	jbyte *data = env->GetByteArrayElements(data_arr, &iscopy);
 
 	addr.can_family = AF_CAN;

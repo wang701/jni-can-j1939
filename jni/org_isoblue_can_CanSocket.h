@@ -17,10 +17,10 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_initIds
 
 /*
  * Class:     org_isoblue_can_CanSocket
- * Method:    closeSocket
+ * Method:    closesocket
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_closeSocket
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_closesocket
   (JNIEnv *, jobject);
 
 /*
@@ -41,18 +41,18 @@ JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_getIfIndex
 
 /*
  * Class:     org_isoblue_can_CanSocket
- * Method:    setSockOpt
+ * Method:    setsockopt
  * Signature: (III)V
  */
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_setSockOpt
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_setsockopt
   (JNIEnv *, jobject, jint, jint, jint);
 
 /*
  * Class:     org_isoblue_can_CanSocket
- * Method:    getSockOpt
+ * Method:    getsockopt
  * Signature: (II)I
  */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_getSockOpt
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_getsockopt
   (JNIEnv *, jobject, jint, jint);
 
 /*

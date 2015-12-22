@@ -130,7 +130,7 @@ JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_getIfIndex
 	
 }
 
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_setSockOpt
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_setsockopt
 (JNIEnv *env, jobject obj, jint level, jint optname, jint optval)
 {
 	jint sockfd = env->GetIntField(obj, socketID);
@@ -141,7 +141,7 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_setSockOpt
 	}	
 }
 
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_getSockOpt
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_getsockopt
 (JNIEnv *env, jobject obj, jint level, jint optname)
 {
 	int _stat = 0;

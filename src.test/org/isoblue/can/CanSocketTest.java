@@ -18,35 +18,34 @@ import org.isoblue.can.CanSocketJ1939.Filter;
 import org.isoblue.can.CanSocketJ1939.Frame;
 
 public class CanSocketTest {
-	private static final String CAN_INTERFACE_0 = "can0";
 
-    	@Retention(RetentionPolicy.RUNTIME)
-    	@Target({ElementType.METHOD})
-    	@interface Test { /* EMPTY */ }
+		@Retention(RetentionPolicy.RUNTIME)
+		@Target({ElementType.METHOD})
+		@interface Test { /* EMPTY */ }
 
-    	public static void main(String[] args) throws IOException {
-        	// PressKeytoStart();
+		public static void main(String[] args) throws IOException {
+			// PressKeytoStart();
 			startTests();
-    	}
+		}
 
-    	private static void PressKeytoStart() {
-        	System.out.println("Press any key to continue...");
-        	try {
-            		System.in.read();
-        	}  
-        	catch (Exception e) {}
-    	}
+		private static void PressKeytoStart() {
+			System.out.println("Press any key to continue...");
+			try {
+					System.in.read();
+			}  
+			catch (Exception e) {}
+		}
 
-	public static byte[] hexStringToByteArray(String s) {
-    		int len = s.length();
-    		byte[] data = new byte[len / 2];
-    		for (int i = 0; i < len; i += 2) {
-        		data[i / 2] = (byte)
-				((Character.digit(s.charAt(i), 16) << 4)
-                             	+ Character.digit(s.charAt(i+1), 16));
-    		}
-    		return data;
-	}
+		public static byte[] hexStringToByteArray(String s) {
+				int len = s.length();
+				byte[] data = new byte[len / 2];
+				for (int i = 0; i < len; i += 2) {
+					data[i / 2] = (byte)
+					((Character.digit(s.charAt(i), 16) << 4)
+									+ Character.digit(s.charAt(i+1), 16));
+				}
+				return data;
+		}
 
     	private static String byteArrayToHex(byte[] a) {
        		StringBuilder sb = new StringBuilder(a.length * 2);
@@ -140,7 +139,7 @@ public class CanSocketTest {
 	
 	@Test
 	public void testJ1939Recv() throws IOException {
-		final CanSocketJ1939 socket = new CanSocketJ1939("all");
+		final CanSocketJ1939 socket = new CanSocketJ1939("");
 		socket.setPromisc();
 		socket.setTimestamp();
 		Filter f1 = new Filter(0, 32, 61444);
