@@ -80,7 +80,7 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_initIds
 	ifIndexID = env->GetFieldID(cls, "mIfIndex", "I");
 }
 
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_closeSocket
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_closesocket
 (JNIEnv *env, jobject obj)
 {
 	jint sockfd = env->GetIntField(obj, socketID);

@@ -15,7 +15,7 @@ import org.isoblue.can.CanSocket;
 import org.isoblue.can.CanSocketJ1939;
 import org.isoblue.can.CanSocket.CanFilter;
 import org.isoblue.can.CanSocketJ1939.Filter;
-import org.isoblue.can.CanSocketJ1939.Frame;
+import org.isoblue.can.CanSocketJ1939.Message;
 
 public class CanSocketTest {
 
@@ -115,7 +115,7 @@ public class CanSocketTest {
 	}
 
 	@Test
-	public void testJ1939GeSockopt() throws IOException {
+	public void testJ1939GetSockopt() throws IOException {
 		final CanSocketJ1939 socket = new CanSocketJ1939("can0");
 		socket.setRecvown();
 		final int recvOn = socket.getRecvown();
@@ -150,8 +150,8 @@ public class CanSocketTest {
 		socket.setfilter(filters);
 		while (true) {
 			if ((socket.select(2)) == 0) {
-				Frame frame = socket.recvmsg();
-				frame.print(1);
+				Message msg = socket.recvMsg();
+				msg.print(1);
 			} else {
 				System.out.println(
 				"\nno data after 2 secs");
@@ -166,8 +166,8 @@ public class CanSocketTest {
 		final CanSocketJ1939 socket = new CanSocketJ1939("can0", 0x45);
 	        byte[] payload = hexStringToByteArray("aaaaaaaaaaaaaaaa");
 		//System.out.println(Arrays.toString(payload));
-		Frame f = new Frame(48, 61444, payload);
-		socket.sendmsg(f);
+		Message msg = new Message(48, 61444, payload);
+		socket.sendMsg(msg);
 		socket.close();
 	}
 }
