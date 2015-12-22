@@ -1,6 +1,6 @@
 SHELL=/bin/bash
 CXX=g++
-NAME:=isoblue-java
+NAME:=j1939-java
 
 ### JAVA_HOME
 ifndef JAVA_HOME
