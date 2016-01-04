@@ -9,163 +9,59 @@ extern "C" {
 #endif
 /*
  * Class:     org_isoblue_can_CanSocket
- * Method:    _fetch_CAN_RAW_FILTER
- * Signature: ()I
+ * Method:    initIds
+ * Signature: ()V
  */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1CAN_1RAW_1FILTER
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_initIds
   (JNIEnv *, jclass);
 
 /*
  * Class:     org_isoblue_can_CanSocket
- * Method:    _fetch_CAN_RAW_ERR_FILTER
- * Signature: ()I
+ * Method:    closesocket
+ * Signature: ()V
  */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1CAN_1RAW_1ERR_1FILTER
-  (JNIEnv *, jclass);
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_closesocket
+  (JNIEnv *, jobject);
 
 /*
  * Class:     org_isoblue_can_CanSocket
- * Method:    _fetch_CAN_RAW_LOOPBACK
- * Signature: ()I
+ * Method:    openSocket
+ * Signature: (II)I
  */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1CAN_1RAW_1LOOPBACK
-  (JNIEnv *, jclass);
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_openSocket
+  (JNIEnv *, jobject, jint, jint);
 
 /*
  * Class:     org_isoblue_can_CanSocket
- * Method:    _fetch_CAN_RAW_RECV_OWN_MSGS
- * Signature: ()I
+ * Method:    getIfIndex
+ * Signature: (Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1CAN_1RAW_1RECV_1OWN_1MSGS
-  (JNIEnv *, jclass);
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_getIfIndex
+  (JNIEnv *, jobject, jstring);
 
 /*
  * Class:     org_isoblue_can_CanSocket
- * Method:    _fetch_mode_RAW
- * Signature: ()I
+ * Method:    setsockopt
+ * Signature: (III)V
  */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1mode_1RAW
-  (JNIEnv *, jclass);
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket_setsockopt
+  (JNIEnv *, jobject, jint, jint, jint);
 
 /*
  * Class:     org_isoblue_can_CanSocket
- * Method:    _fetch_mode_J1939
- * Signature: ()I
+ * Method:    getsockopt
+ * Signature: (II)I
  */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1mode_1J1939
-  (JNIEnv *, jclass);
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_getsockopt
+  (JNIEnv *, jobject, jint, jint);
 
 /*
  * Class:     org_isoblue_can_CanSocket
- * Method:    _fetch_mode_SOL_SOCKET
- * Signature: ()I
+ * Method:    selectFd
+ * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1mode_1SOL_1SOCKET
-  (JNIEnv *, jclass);
-
-/*
- * Class:     org_isoblue_can_CanSocket
- * Method:    _fetch_SO_J1939_PROMISC
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1SO_1J1939_1PROMISC
-  (JNIEnv *, jclass);
-
-/*
- * Class:     org_isoblue_can_CanSocket
- * Method:    _fetch_SO_J1939_RECV_OWN
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1SO_1J1939_1RECV_1OWN
-  (JNIEnv *, jclass);
-
-/*
- * Class:     org_isoblue_can_CanSocket
- * Method:    _fetch_SO_J1939_SEND_PRIO
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1SO_1J1939_1SEND_1PRIO
-  (JNIEnv *, jclass);
-
-/*
- * Class:     org_isoblue_can_CanSocket
- * Method:    _fetch_SO_RCVBUF
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1fetch_1SO_1RCVBUF
-  (JNIEnv *, jclass);
-
-/*
- * Class:     org_isoblue_can_CanSocket
- * Method:    _openSocketRAW
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1openSocketRAW
-  (JNIEnv *, jclass);
-
-/*
- * Class:     org_isoblue_can_CanSocket
- * Method:    _openSocketBCM
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1openSocketBCM
-  (JNIEnv *, jclass);
-
-/*
- * Class:     org_isoblue_can_CanSocket
- * Method:    _openSocketJ1939
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1openSocketJ1939
-  (JNIEnv *, jclass);
-
-/*
- * Class:     org_isoblue_can_CanSocket
- * Method:    _close
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket__1close
-  (JNIEnv *, jclass, jint);
-
-/*
- * Class:     org_isoblue_can_CanSocket
- * Method:    _bindToSocket
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket__1bindToSocket
-  (JNIEnv *, jclass, jint, jint);
-
-/*
- * Class:     org_isoblue_can_CanSocket
- * Method:    _discoverInterfaceIndex
- * Signature: (ILjava/lang/String;)I
- */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1discoverInterfaceIndex
-  (JNIEnv *, jclass, jint, jstring);
-
-/*
- * Class:     org_isoblue_can_CanSocket
- * Method:    _discoverInterfaceName
- * Signature: (II)Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_org_isoblue_can_CanSocket__1discoverInterfaceName
-  (JNIEnv *, jclass, jint, jint);
-
-/*
- * Class:     org_isoblue_can_CanSocket
- * Method:    _setsockopt
- * Signature: (IIII)V
- */
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocket__1setsockopt
-  (JNIEnv *, jclass, jint, jint, jint, jint);
-
-/*
- * Class:     org_isoblue_can_CanSocket
- * Method:    _getsockopt
- * Signature: (III)I
- */
-JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket__1getsockopt
-  (JNIEnv *, jclass, jint, jint, jint);
+JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocket_selectFd
+  (JNIEnv *, jobject, jint);
 
 #ifdef __cplusplus
 }
