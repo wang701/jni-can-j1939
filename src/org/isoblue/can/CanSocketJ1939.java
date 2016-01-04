@@ -25,9 +25,9 @@ public class CanSocketJ1939 extends CanSocket {
 	private static native void initIds();
 	private native void setJ1939Filter(long[] names,
 		int[] addrs, int[] pgns);
-	private native Frame recvMsg();
+	private native Message recvmsg();
 	private native void bindToSocket() throws IOException;
-	private native void sendMsg(Frame f) throws IOException;
+	private native void sendmsg(Message msg) throws IOException;
 	private native void bindToAddr(final int addr) throws IOException;
 	private native void bindToName(final long name) throws IOException;
 	private static final int CAN_J1939 = fetch("CAN_J1939");
@@ -41,73 +41,59 @@ public class CanSocketJ1939 extends CanSocket {
 	private static final int SO_TIMESTAMP = fetch("TIMESTAMP");
 	private static final int SO_PRIORITY = fetch("PRIORITY");
 
-	public CanSocketJ1939() throws IOException {
-		this("all");
-	}
-	
 	public CanSocketJ1939(final String ifName) throws IOException {
 		super(SOCK_DGRAM, CAN_J1939, ifName);
 		initIds();
-		bind();
+	    bindToSocket();	
 	}
+	
+	/* socket binding options */
+	public CanSocketJ1939() throws IOException {
+		this("");
+	} // bind to all interfaces
 	
 	public CanSocketJ1939(final String ifName, final int addr)
 		throws IOException {
-		super(SOCK_DGRAM, CAN_J1939, ifName);
-		initIds();
-		bindaddr(addr);	
-	}
+		this(ifName);
+		bindToAddr(addr);
+	} // bind to addr
 
 	public CanSocketJ1939(final String ifName, final long name)
 		throws IOException {
-		super(SOCK_DGRAM, CAN_J1939, ifName);
-		initIds();
-		bindname(name);	
-	}
+		this(ifName);
+		bindToName(name);	
+	} // bind to name
 
-	@Override
-	public void bind() throws IOException {
-		bindToSocket();
-	}
-	
-	public void bindaddr(final int addr) throws IOException {
-		//TODO: make addr, name class members?
-		bindToAddr(addr);
-	}
-
-	public void bindname(final long name) throws IOException {
-		bindToName(name);
-	}
-	
+	/* socket mode options */
 	public void setPromisc() throws IOException {
-		super.setsockopt(SOL_CAN_J1939, SO_J1939_PROMISC, 1);	
+		super.setSockOpt(SOL_CAN_J1939, SO_J1939_PROMISC, 1);	
 	}	
 
 	public int getPromisc() throws IOException {
-		return super.getsockopt(SOL_CAN_J1939, SO_J1939_PROMISC);
+		return super.getSockOpt(SOL_CAN_J1939, SO_J1939_PROMISC);
 	}	
 
 	public void setRecvown() throws IOException {
-		super.setsockopt(SOL_CAN_J1939, SO_J1939_RECV_OWN, 1);	
+		super.setSockOpt(SOL_CAN_J1939, SO_J1939_RECV_OWN, 1);	
 	}	
 
 	public int getRecvown() throws IOException {
-		return super.getsockopt(SOL_CAN_J1939, SO_J1939_RECV_OWN);	
+		return super.getSockOpt(SOL_CAN_J1939, SO_J1939_RECV_OWN);	
 	}	
 
 	public void setPriority(final int priority) throws IOException {
-		super.setsockopt(SOL_CAN_J1939, SO_PRIORITY, priority);	
+		super.setSockOpt(SOL_CAN_J1939, SO_PRIORITY, priority);	
 	}
 
 	public void setTimestamp() throws IOException {
-		super.setsockopt(SOL_SOCKET, SO_TIMESTAMP, 1);	
+		super.setSockOpt(SOL_SOCKET, SO_TIMESTAMP, 1);	
 	}	
 
 	public int getTimestamp() throws IOException {
-		return super.getsockopt(SOL_SOCKET, SO_TIMESTAMP);
+		return super.getSockOpt(SOL_SOCKET, SO_TIMESTAMP);
 	}	
 
-	
+	/* socket filter */
 	public static class Filter extends CanSocket.CanFilter {
 		protected final long name;
 		protected final int addr;
@@ -121,7 +107,7 @@ public class CanSocketJ1939 extends CanSocket {
 		}
 	}
 	
-	public static class Frame extends CanSocket.CanFrame {
+	public static class Message extends CanSocket.CanFrame {
 		protected String ifName;
 		protected long name;
 		protected int addr;
@@ -138,10 +124,24 @@ public class CanSocketJ1939 extends CanSocket {
        			for(byte b: a)
           			sb.append(String.format("%02x", b & 0xff));
        			return sb.toString();
-    		}
+    	}
+
+		public void print(final int verbose) {
+			if (verbose == 1) {
+				System.out.printf("\n%d,%s,%d,%d,%d,%d,%d,%d,"
+					+ "%d,%s", timestamp, ifName, name,
+					addr, dstName, dstAddr, pgn, len,
+					priority, byteArrayToHex(data));
+			}
+			else {
+				System.out.printf("\n%s,d,%d,%d,%s",
+					ifName, addr, pgn, len,
+					byteArrayToHex(data));
+			}
+		}
 		
 		/* recv frame constructor */
-		public Frame(String ifName, long name, int addr,
+		public Message(String ifName, long name, int addr,
 			long dstName, int dstAddr, int pgn, int len,
 			int priority, byte[] data, int timestamp) {
 			this.ifName = ifName;
@@ -157,33 +157,19 @@ public class CanSocketJ1939 extends CanSocket {
 		}
 		
 		/* send frame constructor */
-		public Frame(long dstName, int dstAddr, int pgn) {
-			this.dstName = dstName;
+		public Message(int dstAddr, int pgn, byte[] data) {
 			this.dstAddr = dstAddr;
 			this.pgn = pgn;
-		}
-		
-		public void print(final int verbose) {
-			if (verbose == 1) {
-				System.out.printf("\n%d,%s,%d,%d,%d,%d,%d,%d,"
-					+ "%d,%s", timestamp, ifName, name,
-					addr, dstName, dstAddr, pgn, len,
-					priority, byteArrayToHex(data));
-			}
-			else {
-				System.out.printf("\n%s,d,%d,%d,%s",
-					ifName, addr, pgn, len,
-					byteArrayToHex(data));
-			}
+			this.data = data;
 		}
 	}
 	
-	public Frame recvmsg() throws IOException {
-		return recvMsg();
+	public Message recvMsg() throws IOException {
+		return recvmsg();
 	}
 
-	public void sendmsg(Frame f) throws IOException {
-		sendMsg(f);	
+	public void sendMsg(Message msg) throws IOException {
+		sendmsg(msg);	
 	}
 	
 	public void setfilter(Collection<Filter> filter) 

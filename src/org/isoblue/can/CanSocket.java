@@ -23,14 +23,14 @@ public abstract class CanSocket implements Closeable {
 	private int mFd;
 	private int mIfIndex;
 	private static native void initIds();  
-	private native void closeSocket() throws IOException;
+	private native void closesocket() throws IOException;
 	private native int openSocket(final int socktype,
 		final int protocol) throws IOException;
 	private native int getIfIndex(final String ifName)
 		throws IOException;
-	private native void setSockOpt(final int level,
+	private native void setsockopt(final int level,
 		final int optname, final int optval) throws IOException;
-	private native int getSockOpt(final int level, final int optname)
+	private native int getsockopt(final int level, final int optname)
 		throws IOException;
 	private native int selectFd(final int timeout)
 		throws IOException;
@@ -96,26 +96,23 @@ public abstract class CanSocket implements Closeable {
 
 	public CanSocket(final int socktype, final int protocol,
 		final String ifName) throws IOException {
-		initIds();
-		this.mFd = openSocket(socktype, protocol);
-		if (ifName == "all") {
+		this(socktype, protocol);
+		if (ifName == "") {
 			this.mIfIndex = 0;
 		}
 		else {
 			this.mIfIndex = getIfIndex(ifName);	
 		}
-	}
-	
-	public abstract void bind() throws IOException; 
+	}	
 
-        public void setsockopt(final int level, final int optname,
+    public void setSockOpt(final int level, final int optname,
 		final int optval) throws IOException {
-		setSockOpt(level, optname, optval);
+		setsockopt(level, optname, optval);
 	}
 	
-	public int getsockopt(final int level, final int optname)
+	public int getSockOpt(final int level, final int optname)
 		throws IOException {
-		return getSockOpt(level, optname);
+		return getsockopt(level, optname);
 	}
 		
 	public int select(final int timeout) throws IOException {
@@ -130,6 +127,6 @@ public abstract class CanSocket implements Closeable {
 
 	@Override
 	public void close() throws IOException {
-               closeSocket();
-        }	
+               closesocket();
+    }	
 }

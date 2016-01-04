@@ -15,27 +15,37 @@ import org.isoblue.can.CanSocket;
 import org.isoblue.can.CanSocketJ1939;
 import org.isoblue.can.CanSocket.CanFilter;
 import org.isoblue.can.CanSocketJ1939.Filter;
-import org.isoblue.can.CanSocketJ1939.Frame;
+import org.isoblue.can.CanSocketJ1939.Message;
 
 public class CanSocketTest {
-	private static final String CAN_INTERFACE_0 = "can0";
 
-    	@Retention(RetentionPolicy.RUNTIME)
-    	@Target({ElementType.METHOD})
-    	@interface Test { /* EMPTY */ }
+		@Retention(RetentionPolicy.RUNTIME)
+		@Target({ElementType.METHOD})
+		@interface Test { /* EMPTY */ }
 
-    	public static void main(String[] args) throws IOException {
-        	// PressKeytoStart();
+		public static void main(String[] args) throws IOException {
+			// PressKeytoStart();
 			startTests();
-    	}
+		}
 
-    	private static void PressKeytoStart() {
-        	System.out.println("Press any key to continue...");
-        	try {
-            		System.in.read();
-        	}  
-        	catch (Exception e) {}
-    	}
+		private static void PressKeytoStart() {
+			System.out.println("Press any key to continue...");
+			try {
+					System.in.read();
+			}  
+			catch (Exception e) {}
+		}
+
+		public static byte[] hexStringToByteArray(String s) {
+				int len = s.length();
+				byte[] data = new byte[len / 2];
+				for (int i = 0; i < len; i += 2) {
+					data[i / 2] = (byte)
+					((Character.digit(s.charAt(i), 16) << 4)
+									+ Character.digit(s.charAt(i+1), 16));
+				}
+				return data;
+		}
 
     	private static String byteArrayToHex(byte[] a) {
        		StringBuilder sb = new StringBuilder(a.length * 2);
@@ -78,6 +88,18 @@ public class CanSocketTest {
 		socket.close();
 	}
 
+	@Test	
+	public void testJ1939BindToAddr() throws IOException {
+		final CanSocketJ1939 socket = new CanSocketJ1939("can0", 0x45);
+		socket.close();
+	}
+
+	//@Test	
+	//public void testJ1939BindToName() throws IOException {
+		//final CanSocketJ1939 socket = new CanSocketJ1939("can0", 0x1234568);
+		//socket.close();
+	//}
+
 	@Test
 	public void testJ1939SetPromisc() throws IOException {
 		final CanSocketJ1939 socket = new CanSocketJ1939("can0");
@@ -93,7 +115,7 @@ public class CanSocketTest {
 	}
 
 	@Test
-	public void testJ1939GeSockopt() throws IOException {
+	public void testJ1939GetSockopt() throws IOException {
 		final CanSocketJ1939 socket = new CanSocketJ1939("can0");
 		socket.setRecvown();
 		final int recvOn = socket.getRecvown();
@@ -117,7 +139,7 @@ public class CanSocketTest {
 	
 	@Test
 	public void testJ1939Recv() throws IOException {
-		final CanSocketJ1939 socket = new CanSocketJ1939("all");
+		final CanSocketJ1939 socket = new CanSocketJ1939("");
 		socket.setPromisc();
 		socket.setTimestamp();
 		Filter f1 = new Filter(0, 32, 61444);
@@ -127,12 +149,12 @@ public class CanSocketTest {
 		filters.add(f2);
 		socket.setfilter(filters);
 		while (true) {
-			if ((socket.select(10)) == 0) {
-				Frame frame = socket.recvmsg();
-				frame.print(1);
+			if ((socket.select(2)) == 0) {
+				Message msg = socket.recvMsg();
+				msg.print(1);
 			} else {
 				System.out.println(
-				"\nno data after 10 secs");
+				"\nno data after 2 secs");
 				break;
 			}
 		}
@@ -141,9 +163,11 @@ public class CanSocketTest {
 	
 	@Test
 	public void testJ1939Send() throws IOException {
-		final CanSocketJ1939 socket = new CanSocketJ1939("can0");
-		Frame f = new Frame(0, 48, 61444);
-		socket.sendmsg(f);
+		final CanSocketJ1939 socket = new CanSocketJ1939("can0", 0x45);
+	        byte[] payload = hexStringToByteArray("aaaaaaaaaaaaaaaa");
+		//System.out.println(Arrays.toString(payload));
+		Message msg = new Message(48, 61444, payload);
+		socket.sendMsg(msg);
 		socket.close();
 	}
 }
