@@ -36,7 +36,7 @@ public abstract class CanSocket implements Closeable {
 		throws IOException;
 
 	static {
-		final String LIB_CAN_INTERFACE = "can";
+		final String LIB_CAN_INTERFACE = "j1939-can";
         	try {
             		System.loadLibrary(LIB_CAN_INTERFACE);
         	} catch (final UnsatisfiedLinkError e) {

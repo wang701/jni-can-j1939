@@ -29,7 +29,7 @@ CXXFLAGS=-I./include -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions \
 -fstack-protector --param=ssp-buffer-size=4 -fPIC -Wno-unused-parameter \
 -pedantic -Wno-long-long -D_REENTRANT -D_GNU_SOURCE \
 $(JAVA_INCLUDES)
-SONAME=can
+SONAME=j1939-can
 LDFLAGS=-Wl,-soname,$(SONAME)
 
 .DEFAULT_GOAL := all
