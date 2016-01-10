@@ -230,12 +230,16 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvmsg
 				break;
 			case SOL_CAN_J1939:
 				if (cmsg->cmsg_type == SCM_J1939_DEST_ADDR)
-					dst_addr = *CMSG_DATA(cmsg);
+					//dst_addr = *CMSG_DATA(cmsg);
+					memcpy(&dst_addr, CMSG_DATA(cmsg),
+						cmsg->cmsg_len - CMSG_LEN(0));
 				else if (cmsg->cmsg_type == SCM_J1939_DEST_NAME)
 					memcpy(&dst_name, CMSG_DATA(cmsg),
 						cmsg->cmsg_len - CMSG_LEN(0));
 				else if (cmsg->cmsg_type == SCM_J1939_PRIO)
-					priority = *CMSG_DATA(cmsg);
+					//priority = *CMSG_DATA(cmsg);
+					memcpy(&priority, CMSG_DATA(cmsg),
+						cmsg->cmsg_len - CMSG_LEN(0));
 				break;
 		}
 	}
