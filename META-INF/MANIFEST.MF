@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: isoblue-java
-Bundle-SymbolicName: isoblue-java
-Bundle-Description: j1939 JNI wrapper
+Bundle-Name: can-j1939-java
+Bundle-SymbolicName: can-j1939-java
+Bundle-Description: J1939 JNI wrapper
 Bundle-Version: 0.1.0
-Export-Package: org.isoblue.j1939
-Import-Package: org.isoblue.j1939
+Export-Package: org.isoblue
+Import-Package: org.isoblue
