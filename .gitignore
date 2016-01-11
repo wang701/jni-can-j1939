@@ -1,6 +1,6 @@
 *.swp
 *.class
 dist/
-lib/
+libs/
+obj/
 classes.test/
-stamps/
