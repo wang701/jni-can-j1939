@@ -183,6 +183,7 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvmsg
 	unsigned int len;
 	uint8_t priority;
 	uint8_t dst_addr;
+	uint8_t *dst_addr_ptr;
 	uint64_t dst_name;	
 	static uint8_t *buf;
 	struct sockaddr_can src;
@@ -229,17 +230,18 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvmsg
 						sizeof(tv));
 				break;
 			case SOL_CAN_J1939:
-				if (cmsg->cmsg_type == SCM_J1939_DEST_ADDR)
-					//dst_addr = *CMSG_DATA(cmsg);
+				if (cmsg->cmsg_type == SCM_J1939_DEST_ADDR) {
 					memcpy(&dst_addr, CMSG_DATA(cmsg),
 						cmsg->cmsg_len - CMSG_LEN(0));
-				else if (cmsg->cmsg_type == SCM_J1939_DEST_NAME)
+				}
+				else if (cmsg->cmsg_type == SCM_J1939_DEST_NAME) {
 					memcpy(&dst_name, CMSG_DATA(cmsg),
 						cmsg->cmsg_len - CMSG_LEN(0));
-				else if (cmsg->cmsg_type == SCM_J1939_PRIO)
-					//priority = *CMSG_DATA(cmsg);
+				}
+				else if (cmsg->cmsg_type == SCM_J1939_PRIO) {
 					memcpy(&priority, CMSG_DATA(cmsg),
 						cmsg->cmsg_len - CMSG_LEN(0));
+				}
 				break;
 		}
 	}
