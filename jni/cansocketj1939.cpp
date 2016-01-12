@@ -19,11 +19,13 @@ extern "C" {
 #include <linux/can/j1939.h>
 }
 
-#if defined(ANDROID) || defined(__ANDROID__)
+//#if defined(ANDROID) || defined(__ANDROID__)
+//#include "jni.h"
+//#else
+//#include "org_isoblue_can_CanSocketJ1939.h"
+//#endif
 #include "jni.h"
-#else
 #include "org_isoblue_can_CanSocketJ1939.h"
-#endif
 
 static const int ERRNO_BUFFER_LEN = 1024;
 static const int RECV_BUFFER_LEN = 1024;
@@ -384,4 +386,3 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_sendmsg
 	}
 	env->ReleaseByteArrayElements(data_arr, data, 0);
 }
-

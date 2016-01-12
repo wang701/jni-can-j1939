@@ -17,11 +17,13 @@ extern "C" {
 #include <linux/can/j1939.h>
 }
 
-#if defined(ANDROID) || defined(__ANDROID__)
+//#if defined(ANDROID) || defined(__ANDROID__)
+//#include "jni.h"
+//#else
+//#include "org_isoblue_can_CanSocket.h"
+//#endif
 #include "jni.h"
-#else
 #include "org_isoblue_can_CanSocket.h"
-#endif
 
 static const int ERRNO_BUFFER_LEN = 1024;
 jfieldID socketID;
