@@ -42,7 +42,7 @@ run:
 	$(JAVA) -Djava.library.path=./libs -cp $(JAVA_DEST):$(JAVA_TEST_DEST) org.isoblue.can.CanSocketTest
 
 .PHONY: all
-all: src jar
+all: jni jar
 
 .PHONY: dirs
 dirs:
