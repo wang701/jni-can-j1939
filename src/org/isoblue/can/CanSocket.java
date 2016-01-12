@@ -37,52 +37,13 @@ public abstract class CanSocket implements Closeable {
 
 	static {
 		final String LIB_CAN_INTERFACE = "j1939-can";
-        	try {
-            		System.loadLibrary(LIB_CAN_INTERFACE);
-        	} catch (final UnsatisfiedLinkError e) {
-            		try {
-                		loadLibFromJar(LIB_CAN_INTERFACE);
-            		} catch (final IOException _e) {
-                	throw new UnsatisfiedLinkError(LIB_CAN_INTERFACE);
-            		}
-        	}
-    	}
-
-    	private static void copyStream(final InputStream in,
-            	final OutputStream out) throws IOException {
-        		final int BYTE_BUFFER_SIZE = 0x1000;
-        		final byte[] buffer = new byte[BYTE_BUFFER_SIZE];
-        		for (int len; (len = in.read(buffer)) != -1;) {
-            			out.write(buffer, 0, len);
-        		}
-    	}	
-
-    	private static void loadLibFromJar(final String libName)
-            	throws IOException {
-        	Objects.requireNonNull(libName);
-        	final String fileName = "/lib/lib" + libName + ".so";
-        	final FileAttribute<Set<PosixFilePermission>> permissions =
-                PosixFilePermissions.asFileAttribute(
-                        PosixFilePermissions.fromString("rw-------"));
-        	final Path tempSo = Files.createTempFile(CanSocket.class.getName(),
-                	".so", permissions);
-        	try {
-            		try (final InputStream libstream =
-                    		CanSocket.class.getResourceAsStream(fileName)) {
-                		if (libstream == null) {
-                    			throw new FileNotFoundException("jar:*!" + fileName);
-                		}
-                	try (final OutputStream fout = Files.newOutputStream(tempSo,
-                        	StandardOpenOption.WRITE,
-                        	StandardOpenOption.TRUNCATE_EXISTING)) {
-                    			copyStream(libstream, fout);
-                		}
-            		}
-            		System.load(tempSo.toString());
-        	} finally {
-            		Files.delete(tempSo);
-        	}
-    	}
+		try {
+			System.loadLibrary(LIB_CAN_INTERFACE);
+		} catch (final UnsatisfiedLinkError e) {
+			System.out.println("libj1939-can.so not loaded successfully")
+		}
+		System.out.println("libj1939-can.so loaded");
+   	}
 
 	protected int getmFd() {
 		return this.mFd;

@@ -31,7 +31,6 @@ public class CanSocketJ1939 extends CanSocket {
 	private native void bindToAddr(final int addr) throws IOException;
 	private native void bindToName(final long name) throws IOException;
 	private static final int CAN_J1939 = fetch("CAN_J1939");
-	//private static final int J1939_NO_NAME = fetch("NO_NAME");
 	private static final int SOCK_DGRAM = fetch("SOCK_DGRAM");
 	private static final int SOL_SOCKET = fetch("SOL_SOCKET");
 	private static final int SOL_CAN_J1939 = fetch("SOL_J1939");
