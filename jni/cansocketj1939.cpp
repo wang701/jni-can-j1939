@@ -248,8 +248,9 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvmsg
 	}
 	
 	/* find epoch timestamp */
-	jfloat timestamp = (tv.tv_sec * 1000 + tv.tv_usec) / 1000;
-
+	//jfloat timestamp = (tv.tv_sec * 1000 + tv.tv_usec) / 1000;
+	jint timestamp = tv.tv_sec;
+	
 	/* find name of receive interface */
 	ifr.ifr_ifindex = src.can_ifindex;
 	ioctl(sockfd, SIOCGIFNAME, &ifr);
@@ -264,7 +265,7 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvmsg
 	const jmethodID j1939frame_cstr = env->GetMethodID(j1939frame_clazz,
 							"<init>",
 							"(Ljava/lang/String;"
-							"JIJIIII[BF)V");
+							"JIJIIII[BI)V");
 	if (j1939frame_cstr == NULL) {
 		return NULL;
 	}

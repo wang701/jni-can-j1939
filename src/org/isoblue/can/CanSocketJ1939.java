@@ -116,7 +116,7 @@ public class CanSocketJ1939 extends CanSocket {
 		protected int len;
 		protected int priority;
 		protected byte[] data;
-		protected float timestamp;
+		protected int timestamp;
     		
 		private static String byteArrayToHex(byte[] a) {
        			StringBuilder sb = new StringBuilder(a.length * 2);
@@ -127,8 +127,8 @@ public class CanSocketJ1939 extends CanSocket {
 
 		public void print(final int verbose) {
 			if (verbose == 1) {
-				System.out.printf("\n%.3f,%s,%d,%d,%d,%d,%d,%d,"
-					+ "%d,%s", timestamp, ifName, name,
+				System.out.printf("\n%d,%s,%d,%d,%d,%d,%d,%d,"
+					+ "%d,0x%s", timestamp, ifName, name,
 					addr, dstName, dstAddr, pgn, len,
 					priority, byteArrayToHex(data));
 			}
@@ -138,11 +138,22 @@ public class CanSocketJ1939 extends CanSocket {
 					byteArrayToHex(data));
 			}
 		}
+
+		public String toString() {
+			String msgStr = String.format("%d %s %d %d %d %d %d %d %d %s",
+								timestamp, ifName, name,
+								addr, dstName, dstAddr,
+								pgn, len, priority,
+								byteArrayToHex(data)
+							);
+			//System.out.printf("\n%s", msgStr);
+			return msgStr;
+		}
 		
 		/* recv frame constructor */
 		public Message(String ifName, long name, int addr,
 			long dstName, int dstAddr, int pgn, int len,
-			int priority, byte[] data, float timestamp) {
+			int priority, byte[] data, int timestamp) {
 			this.ifName = ifName;
 			this.name = name;
 			this.addr = addr;
