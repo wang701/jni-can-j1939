@@ -185,7 +185,6 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvmsg
 	unsigned int len;
 	uint8_t priority;
 	uint8_t dst_addr;
-	uint8_t *dst_addr_ptr;
 	uint64_t dst_name;	
 	static uint8_t *buf;
 	struct sockaddr_can src;
@@ -249,7 +248,7 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvmsg
 	}
 	
 	/* find epoch timestamp */
-	jint timestamp = tv.tv_sec;
+	jfloat timestamp = (tv.tv_sec * 1000 + tv.tv_usec) / 1000;
 
 	/* find name of receive interface */
 	ifr.ifr_ifindex = src.can_ifindex;
@@ -258,14 +257,14 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvmsg
 
 	const jsize dsize = len;
 	const jclass j1939frame_clazz = env->FindClass("org/isoblue/can/"
-						"CanSocketJ1939$Frame");
+						"CanSocketJ1939$Message");
 	if (j1939frame_clazz == NULL) {
 		return NULL;
 	}
 	const jmethodID j1939frame_cstr = env->GetMethodID(j1939frame_clazz,
 							"<init>",
 							"(Ljava/lang/String;"
-							"JIJIIII[BI)V");
+							"JIJIIII[BF)V");
 	if (j1939frame_cstr == NULL) {
 		return NULL;
 	}

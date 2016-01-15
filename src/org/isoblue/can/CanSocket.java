@@ -40,7 +40,7 @@ public abstract class CanSocket implements Closeable {
 		try {
 			System.loadLibrary(LIB_CAN_INTERFACE);
 		} catch (final UnsatisfiedLinkError e) {
-			System.out.println("libj1939-can.so not loaded successfully")
+			System.out.println("libj1939-can.so not loaded successfully");
 		}
 		System.out.println("libj1939-can.so loaded");
    	}
