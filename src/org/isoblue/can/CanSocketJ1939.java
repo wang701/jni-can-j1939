@@ -107,16 +107,16 @@ public class CanSocketJ1939 extends CanSocket {
 	}
 	
 	public static class Message extends CanSocket.CanFrame {
-		protected String ifName;
-		protected long name;
-		protected int addr;
-		protected long dstName;
-		protected int dstAddr;
-		protected int pgn;
-		protected int len;
-		protected int priority;
-		protected byte[] data;
-		protected int timestamp;
+		public String ifName;
+		public long name;
+		public int addr;
+		public long dstName;
+		public int dstAddr;
+		public int pgn;
+		public int len;
+		public int priority;
+		public byte[] data;
+		public int timestamp;
     		
 		private static String byteArrayToHex(byte[] a) {
        			StringBuilder sb = new StringBuilder(a.length * 2);
