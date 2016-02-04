@@ -25,9 +25,9 @@ public class CanSocketJ1939 extends CanSocket {
 	private static native void initIds();
 	private native void setJ1939Filter(long[] names,
 		int[] addrs, int[] pgns);
-	private native Message recvmsg();
+	private native J1939Message recvmsg();
 	private native void bindToSocket() throws IOException;
-	private native void sendmsg(Message msg) throws IOException;
+	private native void sendmsg(J1939Message msg) throws IOException;
 	private native void bindToAddr(final int addr) throws IOException;
 	private native void bindToName(final long name) throws IOException;
 	private static final int CAN_J1939 = fetch("CAN_J1939");
@@ -106,7 +106,7 @@ public class CanSocketJ1939 extends CanSocket {
 		}
 	}
 	
-	public static class Message extends CanSocket.CanFrame {
+	public static class J1939Message extends CanSocket.CanFrame {
 		public String ifName;
 		public long name;
 		public int addr;
@@ -151,7 +151,7 @@ public class CanSocketJ1939 extends CanSocket {
 		}
 		
 		/* recv frame constructor */
-		public Message(String ifName, long name, int addr,
+		public J1939Message(String ifName, long name, int addr,
 			long dstName, int dstAddr, int pgn, int len,
 			int priority, byte[] data, int timestamp) {
 			this.ifName = ifName;
@@ -167,18 +167,18 @@ public class CanSocketJ1939 extends CanSocket {
 		}
 		
 		/* send frame constructor */
-		public Message(int dstAddr, int pgn, byte[] data) {
+		public J1939Message(int dstAddr, int pgn, byte[] data) {
 			this.dstAddr = dstAddr;
 			this.pgn = pgn;
 			this.data = data;
 		}
 	}
 	
-	public Message recvMsg() throws IOException {
+	public J1939Message recvMsg() throws IOException {
 		return recvmsg();
 	}
 
-	public void sendMsg(Message msg) throws IOException {
+	public void sendMsg(J1939Message msg) throws IOException {
 		sendmsg(msg);	
 	}
 	

@@ -34,7 +34,7 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_setJ1939Filter
 /*
  * Class:     org_isoblue_can_CanSocketJ1939
  * Method:    recvmsg
- * Signature: ()Lorg/isoblue/can/CanSocketJ1939/Message;
+ * Signature: ()Lorg/isoblue/can/CanSocketJ1939/J1939Message;
  */
 JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvmsg
   (JNIEnv *, jobject);
@@ -50,7 +50,7 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_bindToSocket
 /*
  * Class:     org_isoblue_can_CanSocketJ1939
  * Method:    sendmsg
- * Signature: (Lorg/isoblue/can/CanSocketJ1939/Message;)V
+ * Signature: (Lorg/isoblue/can/CanSocketJ1939/J1939Message;)V
  */
 JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_sendmsg
   (JNIEnv *, jobject, jobject);

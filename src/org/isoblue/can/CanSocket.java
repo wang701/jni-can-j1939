@@ -88,6 +88,6 @@ public abstract class CanSocket implements Closeable {
 
 	@Override
 	public void close() throws IOException {
-               closesocket();
+		closesocket();
     }	
 }

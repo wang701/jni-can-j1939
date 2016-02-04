@@ -258,7 +258,7 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvmsg
 
 	const jsize dsize = len;
 	const jclass j1939frame_clazz = env->FindClass("org/isoblue/can/"
-						"CanSocketJ1939$Message");
+						"CanSocketJ1939$J1939Message");
 	if (j1939frame_clazz == NULL) {
 		return NULL;
 	}
