@@ -58,7 +58,7 @@ test: src $(JAVA_TEST_SRC)
 		$(sort $(JAVA_TEST_SRC))
 
 .PHONY: jni
-jni: src 
+jni: src
 	$(JAVAH) -jni -d $(JNI_DIR) -classpath $(JAVA_DEST) \
 		$(JNI_CLASSES)
 	ndk-build V=1 NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=./Android.mk
