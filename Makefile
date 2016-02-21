@@ -26,6 +26,8 @@ LIB_DEST=libs
 OBJ_DEST=obj
 JAR_DEST=dist
 JNI_DIR=jni
+APP_LIB_DIR=/home/yang/ASProjects/Candroid/app/libs
+DEV_TMP_DIR=/data/local/tmp
 JAR_DEST_FILE=$(JAR_DEST)/$(NAME).jar
 JAR_MANIFEST_FILE=META-INF/MANIFEST.MF
 JNI_CLASSES=org.isoblue.can.CanSocket org.isoblue.can.CanSocketJ1939
@@ -66,6 +68,11 @@ jni: src
 .PHONY: jar
 jar: jni $(JAR_MANIFEST_FILE)
 	$(JAR) cMf $(JAR_DEST_FILE) $(JAR_MANIFEST_FILE) libs -C $(JAVA_DEST) .
+
+.PHONY: copy
+copy:
+	cp $(JAR_DEST)/*.jar $(APP_LIB_DIR)
+	adb push $(LIB_DEST)/arm64-v8a/* $(DEV_TMP_DIR)
 
 .PHONY: check
 check: jar test
