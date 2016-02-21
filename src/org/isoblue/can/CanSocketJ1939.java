@@ -22,7 +22,7 @@ import java.util.Iterator;
 public class CanSocketJ1939 extends CanSocket {
 
 	private static native int fetch(final String param);
-	// private static native void initIds();
+	private static native void initIds();
 	private native void setJ1939Filter(long[] names,
 		int[] addrs, int[] pgns);
 	private native J1939Message recvmsg();
@@ -42,7 +42,7 @@ public class CanSocketJ1939 extends CanSocket {
 
 	public CanSocketJ1939(final String ifName) throws IOException {
 		super(SOCK_DGRAM, CAN_J1939, ifName);
-		// initIds();
+		initIds();
 	    bindToSocket();
 	}
 
