@@ -35,8 +35,10 @@ static char ctrlmsg[CMSG_SPACE(sizeof(struct timeval))
 	+ CMSG_SPACE(sizeof(uint8_t)) /* priority */
 	];
 
+/*
 jfieldID sockID;
 jfieldID ifIndID;
+*/
 
 static void throwException(JNIEnv *env, const std::string& exception_name,
 			   const std::string& msg)
@@ -78,7 +80,7 @@ static void throwOutOfMemoryError(JNIEnv *env, const std::string& message)
 }
 
 JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_fetch
-(JNIEnv *env, jclass obj, jstring param)
+(JNIEnv *env, jclass cls, jstring param)
 {
     	const char *str = env->GetStringUTFChars(param, NULL);
 	if (strcmp(str, "CAN_J1939") == 0) {
@@ -119,33 +121,36 @@ JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_fetch
 	}
 	else {
 		throwIllegalArgumentException(env,
-			"fetch argument is invalid");		
+			"fetch argument is invalid");
 	}
 
 	env->ReleaseStringUTFChars(param, str);
 	return -1;
 }
-
+/*
 JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_initIds
 (JNIEnv *env, jclass cls)
 {
-	sockID = env->GetFieldID(cls, "mFd", "I");	
+	sockID = env->GetFieldID(cls, "mFd", "I");
 	ifIndID = env->GetFieldID(cls, "mIfIndex", "I");
 }
-
+*/
 JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_setJ1939Filter
 (JNIEnv *env, jobject obj, jlongArray names, jintArray addrs, jintArray pgns)
 {
 	int i;
 	/* get the array length */
-	jsize len = env->GetArrayLength(names);	
+	jsize len = env->GetArrayLength(names);
 
 	struct j1939_filter* filt = (struct j1939_filter*) malloc(
 		len * sizeof(struct j1939_filter));
 	if (filt == NULL) {
-		throwOutOfMemoryError(env, "could not allocate filters");		
+		throwOutOfMemoryError(env, "could not allocate filters");
 	}
 	/*get the sock fd */
+	jclass cls = env->FindClass("org/isoblue/can/"
+								"CanSocketJ1939");
+	jfieldID sockID = env->GetFieldID(cls, "mFd", "I");
 	jint sockfd = env->GetIntField(obj, sockID);
 
 	/* fill up the filter(s) */
@@ -160,8 +165,8 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_setJ1939Filter
 		filt[i].pgn = pgn[i];
 		filt[i].pgn_mask = ~0;
 	}
-	env->ReleaseLongArrayElements(names, name, 0);	
-	env->ReleaseIntArrayElements(addrs, addr, 0);	
+	env->ReleaseLongArrayElements(names, name, 0);
+	env->ReleaseIntArrayElements(addrs, addr, 0);
 	env->ReleaseIntArrayElements(pgns, pgn, 0);
 
 	/* apply filters to socket */
@@ -177,6 +182,10 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvmsg
 (JNIEnv *env, jobject obj)
 {
 	/* get sock fd and ifindex */
+	jclass cls = env->FindClass("org/isoblue/can/"
+								"CanSocketJ1939");
+	jfieldID sockID = env->GetFieldID(cls, "mFd", "I");
+	jfieldID ifIndID = env->GetFieldID(cls, "mIfIndex", "I");
 	jint sockfd = env->GetIntField(obj, sockID);
 	jint ifindex = env->GetIntField(obj, ifIndID);
 
@@ -185,8 +194,8 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvmsg
 	unsigned int len;
 	uint8_t priority;
 	uint8_t dst_addr;
-	uint64_t dst_name;	
-	static uint8_t *buf;
+	uint64_t dst_name;
+	uint8_t *buf;
 	struct sockaddr_can src;
 	struct ifreq ifr;
 	struct iovec iov;
@@ -205,18 +214,18 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvmsg
 	src.can_addr.j1939.name = J1939_NO_NAME;
 	src.can_addr.j1939.addr = J1939_NO_ADDR;
 	src.can_addr.j1939.pgn = J1939_NO_PGN;
-	
+
 	iov.iov_base = &buf[0];
 	msg.msg_name = &src;
 	msg.msg_iov = &iov;
 	msg.msg_iovlen = 1;
 	msg.msg_control = &ctrlmsg;
-	
+
 	iov.iov_len = RECV_BUFFER_LEN;
 	msg.msg_namelen = sizeof(src);
 	msg.msg_controllen = sizeof(ctrlmsg);
 	msg.msg_flags = 0;
-	
+
 	ret = recvmsg(sockfd, &msg, 0);
 	if (ret < 0) {
 		throwIOExceptionErrno(env, errno);
@@ -246,11 +255,11 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvmsg
 				break;
 		}
 	}
-	
+
 	/* find epoch timestamp */
 	//jfloat timestamp = (tv.tv_sec * 1000 + tv.tv_usec) / 1000;
 	jint timestamp = tv.tv_sec;
-	
+
 	/* find name of receive interface */
 	ifr.ifr_ifindex = src.can_ifindex;
 	ioctl(sockfd, SIOCGIFNAME, &ifr);
@@ -269,7 +278,7 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvmsg
 	if (j1939frame_cstr == NULL) {
 		return NULL;
 	}
-	const jbyteArray data = env->NewByteArray(dsize);	
+	const jbyteArray data = env->NewByteArray(dsize);
 	if (data == NULL) {
 		if (env->ExceptionCheck() != JNI_TRUE) {
 			throwOutOfMemoryError(env,
@@ -289,25 +298,30 @@ JNIEXPORT jobject JNICALL Java_org_isoblue_can_CanSocketJ1939_recvmsg
 					dst_name, dst_addr,
 					src.can_addr.j1939.pgn,
 					len, priority, data, timestamp);
-	
+
 	free(buf);
 	return retobj;
-						
+
 }
 
 JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_bindToSocket
 (JNIEnv *env, jobject obj)
 {
+	jclass cls = env->FindClass("org/isoblue/can/"
+								"CanSocketJ1939");
+	jfieldID sockID = env->GetFieldID(cls, "mFd", "I");
+	jfieldID ifIndID = env->GetFieldID(cls, "mIfIndex", "I");
 	jint sockfd = env->GetIntField(obj, sockID);
 	jint ifindex = env->GetIntField(obj, ifIndID);
 	struct sockaddr_can addr;
+
 	/* bind with no filtering */
 	addr.can_family = AF_CAN;
 	addr.can_ifindex = ifindex;
 	addr.can_addr.j1939.name = J1939_NO_NAME;
 	addr.can_addr.j1939.addr = J1939_NO_ADDR;
 	addr.can_addr.j1939.pgn = J1939_NO_PGN;
-	
+
 	if (bind(sockfd, reinterpret_cast<const sockaddr *>(&addr),
 		sizeof(addr)) != 0) {
 		throwIOExceptionErrno(env, errno);
@@ -316,6 +330,10 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_bindToSocket
 JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_bindToAddr
 (JNIEnv *env, jobject obj, jint baddr)
 {
+	jclass cls = env->FindClass("org/isoblue/can/"
+								"CanSocketJ1939");
+	jfieldID sockID = env->GetFieldID(cls, "mFd", "I");
+	jfieldID ifIndID = env->GetFieldID(cls, "mIfIndex", "I");
 	jint sockfd = env->GetIntField(obj, sockID);
 	jint ifindex = env->GetIntField(obj, ifIndID);
 	int _baddr = baddr;
@@ -334,18 +352,22 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_bindToAddr
 }
 
 JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_bindToName
-(JNIEnv *env, jobject obj, jlong name) 
+(JNIEnv *env, jobject obj, jlong name)
 {
+	jclass cls = env->FindClass("org/isoblue/can/"
+								"CanSocketJ1939");
+	jfieldID sockID = env->GetFieldID(cls, "mFd", "I");
+	jfieldID ifIndID = env->GetFieldID(cls, "mIfIndex", "I");
 	jint sockfd = env->GetIntField(obj, sockID);
 	jint ifindex = env->GetIntField(obj, ifIndID);
 	struct sockaddr_can addr;
 	/* bind with no filtering */
 	addr.can_family = AF_CAN;
 	addr.can_ifindex = ifindex;
-	addr.can_addr.j1939.name = name; 
+	addr.can_addr.j1939.name = name;
 	addr.can_addr.j1939.addr = J1939_NO_ADDR;
 	addr.can_addr.j1939.pgn = J1939_NO_PGN;
-	
+
 	if (bind(sockfd, reinterpret_cast<const sockaddr *>(&addr),
 		sizeof(addr)) != 0) {
 		throwIOExceptionErrno(env, errno);
@@ -358,7 +380,10 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_sendmsg
 	struct sockaddr_can addr;
 	jboolean iscopy;
 	memset(&addr, 0, sizeof(addr));
-	
+
+	jclass cls = env->FindClass("org/isoblue/can/"
+								"CanSocketJ1939");
+	jfieldID sockID = env->GetFieldID(cls, "mFd", "I");
 	jint sockfd = env->GetIntField(obj, sockID);
 	jclass frame_clazz = env->GetObjectClass(frameobj);
 	jfieldID dstaddrID = env->GetFieldID(frame_clazz, "dstAddr", "I");
