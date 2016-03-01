@@ -141,6 +141,10 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_setJ1939Filter
 	/* get the array length */
 	jsize len = env->GetArrayLength(names);
 
+	if (!len) {
+		return;
+	}
+
 	struct j1939_filter* filt = (struct j1939_filter*) malloc(
 		len * sizeof(struct j1939_filter));
 	if (filt == NULL) {

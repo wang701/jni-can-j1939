@@ -19,10 +19,10 @@ import java.util.Objects;
 import java.util.Set;
 
 public abstract class CanSocket implements Closeable {
-	
+
 	private int mFd;
 	private int mIfIndex;
-	private static native void initIds();  
+	private static native void initIds();
 	private native void closesocket() throws IOException;
 	private native int openSocket(final int socktype,
 		final int protocol) throws IOException;
@@ -62,32 +62,32 @@ public abstract class CanSocket implements Closeable {
 			this.mIfIndex = 0;
 		}
 		else {
-			this.mIfIndex = getIfIndex(ifName);	
+			this.mIfIndex = getIfIndex(ifName);
 		}
-	}	
+	}
 
     public void setSockOpt(final int level, final int optname,
 		final int optval) throws IOException {
 		setsockopt(level, optname, optval);
 	}
-	
+
 	public int getSockOpt(final int level, final int optname)
 		throws IOException {
 		return getsockopt(level, optname);
 	}
-		
+
 	public int select(final int timeout) throws IOException {
-		return selectFd(timeout);	
+		return selectFd(timeout);
 	}
-	
+
 	public abstract static class CanFrame {
 	}
-	
+
 	public abstract static class CanFilter {
 	}
 
 	@Override
 	public void close() throws IOException {
 		closesocket();
-    }	
+    }
 }

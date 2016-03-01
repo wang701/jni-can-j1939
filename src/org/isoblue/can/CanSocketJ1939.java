@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,6 +15,7 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Collection;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
@@ -93,10 +95,11 @@ public class CanSocketJ1939 extends CanSocket {
 	}
 
 	/* socket filter */
-	public static class Filter extends CanSocket.CanFilter {
-		protected final long name;
-		protected final int addr;
-		protected final int pgn;
+	public static class Filter extends CanSocket.CanFilter
+		implements Serializable {
+		public final long name;
+		public final int addr;
+		public final int pgn;
 
 		public Filter(final long name, final int addr,
 			final int pgn) {
