@@ -7,6 +7,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef org_isoblue_can_CanSocketJ1939_Filter_serialVersionUID
+#define org_isoblue_can_CanSocketJ1939_Filter_serialVersionUID 20160304001LL
 #ifdef __cplusplus
 }
 #endif

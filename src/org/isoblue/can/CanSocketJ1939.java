@@ -97,6 +97,7 @@ public class CanSocketJ1939 extends CanSocket {
 	/* socket filter */
 	public static class Filter extends CanSocket.CanFilter
 		implements Serializable {
+		private static final long serialVersionUID = 2016_03_04_001L;
 		public final long name;
 		public final int addr;
 		public final int pgn;
@@ -106,6 +107,12 @@ public class CanSocketJ1939 extends CanSocket {
 			this.name = name;
 			this.addr = addr;
 			this.pgn = pgn;
+		}
+
+		public String toString() {
+			String filterStr = String.format("src name: %d, src addr: %d, " +
+				"pgn: %d", name, addr, pgn);
+			return filterStr;
 		}
 	}
 
