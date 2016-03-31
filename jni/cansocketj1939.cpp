@@ -157,14 +157,28 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_setJ1939Filter
 	jlong *name = env->GetLongArrayElements(names, NULL);
 	jint *addr = env->GetIntArrayElements(addrs, NULL);
 	jint *pgn = env->GetIntArrayElements(pgns, NULL);
+	
 	for (i = 0; i < len; i++) {
-		filt[i].name = name[i];
-		filt[i].name_mask = ~0ULL;
-		filt[i].addr = addr[i];
-		filt[i].addr_mask = ~0;
-		filt[i].pgn = pgn[i];
-		filt[i].pgn_mask = ~0;
+		if (name[i] >= 0) {
+			filt[i].name = name[i];
+			filt[i].name_mask = ~0ULL;
+		}
 	}
+
+	for (i = 0; i < len; i++) {
+		if (addr[i] >= 0) {	
+			filt[i].addr = addr[i];
+			filt[i].addr_mask = ~0;
+		}
+	}
+
+	for (i = 0; i < len; i++) {
+		if (pgn[i] >= 0) {	
+			filt[i].pgn = pgn[i];
+			filt[i].pgn_mask = ~0;
+		}
+	}
+	
 	env->ReleaseLongArrayElements(names, name, 0);
 	env->ReleaseIntArrayElements(addrs, addr, 0);
 	env->ReleaseIntArrayElements(pgns, pgn, 0);

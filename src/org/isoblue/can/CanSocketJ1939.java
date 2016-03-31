@@ -43,83 +43,118 @@ public class CanSocketJ1939 extends CanSocket {
 	private static final int SO_PRIORITY = fetch("PRIORITY");
 
 	public CanSocketJ1939(final String ifName) throws IOException {
+
 		super(SOCK_DGRAM, CAN_J1939, ifName);
 		initIds();
 	    bindToSocket();
 	}
 
-	/* socket binding options */
+	/* bind to all interfaces */
 	public CanSocketJ1939() throws IOException {
-		this("");
-	} // bind to all interfaces
 
+		this("");
+	}
+
+	/* bind to address */
 	public CanSocketJ1939(final String ifName, final int addr)
 		throws IOException {
+
 		this(ifName);
 		bindToAddr(addr);
-	} // bind to addr
+	}
 
+	/* bind to name */
 	public CanSocketJ1939(final String ifName, final long name)
 		throws IOException {
+
 		this(ifName);
 		bindToName(name);
-	} // bind to name
+	}
 
 	/* socket mode options */
 	public void setPromisc() throws IOException {
+
 		super.setSockOpt(SOL_CAN_J1939, SO_J1939_PROMISC, 1);
 	}
 
 	public int getPromisc() throws IOException {
+
 		return super.getSockOpt(SOL_CAN_J1939, SO_J1939_PROMISC);
 	}
 
 	public void setRecvown() throws IOException {
+
 		super.setSockOpt(SOL_CAN_J1939, SO_J1939_RECV_OWN, 1);
 	}
 
 	public int getRecvown() throws IOException {
+
 		return super.getSockOpt(SOL_CAN_J1939, SO_J1939_RECV_OWN);
 	}
 
 	public void setPriority(final int priority) throws IOException {
+
 		super.setSockOpt(SOL_CAN_J1939, SO_PRIORITY, priority);
 	}
 
 	public void setTimestamp() throws IOException {
+
 		super.setSockOpt(SOL_SOCKET, SO_TIMESTAMP, 1);
 	}
 
 	public int getTimestamp() throws IOException {
+		
 		return super.getSockOpt(SOL_SOCKET, SO_TIMESTAMP);
 	}
 
 	/* socket filter */
 	public static class Filter extends CanSocket.CanFilter
 		implements Serializable {
-		private static final long serialVersionUID = 2016_03_04_001L;
-		public final long name;
-		public final int addr;
-		public final int pgn;
 
-		public Filter(final long name, final int addr,
-			final int pgn) {
-			this.name = name;
-			this.addr = addr;
+		private static final long serialVersionUID = 2016_03_04_001L;
+		public long srcName;
+		public int srcAddr;
+		public int pgn;
+
+		public Filter(long srcName, int srcAddr, int pgn) {
+
+			this.srcName = srcName;
+			this.srcAddr = srcAddr;
 			this.pgn = pgn;
 		}
 
+		public Filter(int pgn) {
+
+			this(-1, -1, pgn);
+		}
+
+		public long getSrcName() {
+			return srcName;
+		}
+
+		public int getSrcAddr() {
+			return srcAddr;
+		}
+
+		public int getPgn() {
+			return pgn;
+		}
+
 		public String toString() {
-			String filterStr = String.format("src name: %d, src addr: %d, " +
-				"pgn: %d", name, addr, pgn);
+			
+			String filterStr = String.format(
+				"Source Name: %d, Source Address: %d, PGN: %d",
+				srcName, srcAddr, pgn);
+
 			return filterStr;
 		}
 	}
 
 	public static class J1939Message extends CanSocket.CanFrame {
+
 		public String ifName;
-		public long name;
-		public int addr;
+		public long srcName;
+		public int srcAddr;
 		public long dstName;
 		public int dstAddr;
 		public int pgn;
@@ -128,45 +163,14 @@ public class CanSocketJ1939 extends CanSocket {
 		public byte[] data;
 		public double timestamp;
 
-		private static String byteArrayToHex(byte[] a) {
-       			StringBuilder sb = new StringBuilder(a.length * 2);
-       			for(byte b: a)
-          			sb.append(String.format("%02x", b & 0xff));
-       			return sb.toString();
-    	}
-
-		public void print(final int verbose) {
-			if (verbose == 1) {
-				System.out.printf("\n%.4f,%s,%d,%d,%d,%d,%d,%d,"
-					+ "%d,0x%s", timestamp, ifName, name,
-					addr, dstName, dstAddr, pgn, len,
-					priority, byteArrayToHex(data));
-			}
-			else {
-				System.out.printf("\n%s,d,%d,%d,%s",
-					ifName, addr, pgn, len,
-					byteArrayToHex(data));
-			}
-		}
-
-		public String toString() {
-			String msgStr = String.format("%.4f %s %d %d %d %d %d %d %d 0x%s",
-								timestamp, ifName, name,
-								addr, dstName, dstAddr,
-								pgn, len, priority,
-								byteArrayToHex(data)
-							);
-			//System.out.printf("\n%s", msgStr);
-			return msgStr;
-		}
-
 		/* recv frame constructor */
-		public J1939Message(String ifName, long name, int addr,
+		public J1939Message(String ifName, long srcName, int srcAddr,
 			long dstName, int dstAddr, int pgn, int len,
 			int priority, byte[] data, double timestamp) {
+
 			this.ifName = ifName;
-			this.name = name;
-			this.addr = addr;
+			this.srcName = srcName;
+			this.srcAddr = srcAddr;
 			this.dstName = dstName;
 			this.dstAddr = dstAddr;
 			this.pgn = pgn;
@@ -178,43 +182,68 @@ public class CanSocketJ1939 extends CanSocket {
 
 		/* send frame constructor */
 		public J1939Message(int dstAddr, int pgn, byte[] data) {
+
 			this.dstAddr = dstAddr;
 			this.pgn = pgn;
 			this.data = data;
 		}
+
+		private static String byteArrayToHex(byte[] a) {
+
+       		StringBuilder sb = new StringBuilder(a.length * 2);
+			for(byte b: a)
+				sb.append(String.format("%02x", b & 0xff));
+			return sb.toString();
+    	}
+
+		public String toString() {
+			String msgStr = String.format("%.4f %s %d %d %d %d %d %d 0x%s",
+				timestamp, ifName, srcName,
+				srcAddr, dstAddr,
+				pgn, len, priority,
+				byteArrayToHex(data));
+
+			return msgStr;
+		}
 	}
 
 	public J1939Message recvMsg() throws IOException {
+
 		return recvmsg();
 	}
 
 	public void sendMsg(J1939Message msg) throws IOException {
+
 		sendmsg(msg);
 	}
 
-	public void setfilter(Collection<Filter> filter)
+	public void setJ1939Filter(Collection<Filter> filter)
 		throws IOException, IllegalArgumentException {
-		long[] names = new long[filter.size()];
-		int[] addrs = new int[filter.size()];
+
+		long[] srcNames = new long[filter.size()];
+		int[] srcAddrs = new int[filter.size()];
 		int[] pgns = new int[filter.size()];
 		int i = 0;
+
 		Iterator<Filter> it = filter.iterator();
+		
 		while (it.hasNext()) {
 			Filter filt = it.next();
-			if (filt.addr >= 0xFF) {
-				throw new IllegalArgumentException("addr: "
-					+ filt.addr + " out of range");
+			if (filt.srcAddr >= 0xFF) {
+				throw new IllegalArgumentException("srcAddr: "
+					+ filt.srcAddr + " out of range");
 			}
 			if (filt.pgn > 0x3FFFF) {
 				throw new IllegalArgumentException("pgn: "
 					+ filt.pgn + " out of range");
 			}
-			names[i] = filt.name;
-			addrs[i] = filt.addr;
+			srcNames[i] = filt.srcName;
+			srcAddrs[i] = filt.srcAddr;
 			pgns[i] = filt.pgn;
 			i++;
 		}
-		setJ1939Filter(names, addrs, pgns);
+		
+		setJ1939Filter(srcNames, srcAddrs, pgns);
 	}
 }
 
