@@ -46,7 +46,7 @@ public class CanSocketJ1939 extends CanSocket {
 
 		super(SOCK_DGRAM, CAN_J1939, ifName);
 		initIds();
-	    bindToSocket();
+		bindToSocket();
 	}
 
 	/* bind to all interfaces */
@@ -103,7 +103,7 @@ public class CanSocketJ1939 extends CanSocket {
 	}
 
 	public int getTimestamp() throws IOException {
-		
+
 		return super.getSockOpt(SOL_SOCKET, SO_TIMESTAMP);
 	}
 
@@ -123,11 +123,6 @@ public class CanSocketJ1939 extends CanSocket {
 			this.pgn = pgn;
 		}
 
-		public Filter(int pgn) {
-
-			this(-1, -1, pgn);
-		}
-
 		public long getSrcName() {
 			return srcName;
 		}
@@ -141,7 +136,7 @@ public class CanSocketJ1939 extends CanSocket {
 		}
 
 		public String toString() {
-			
+
 			String filterStr = String.format(
 				"Source Name: %d, Source Address: %d, PGN: %d",
 				srcName, srcAddr, pgn);
@@ -190,11 +185,11 @@ public class CanSocketJ1939 extends CanSocket {
 
 		private static String byteArrayToHex(byte[] a) {
 
-       		StringBuilder sb = new StringBuilder(a.length * 2);
+			StringBuilder sb = new StringBuilder(a.length * 2);
 			for(byte b: a)
 				sb.append(String.format("%02x", b & 0xff));
 			return sb.toString();
-    	}
+		}
 
 		public String toString() {
 			String msgStr = String.format("%.4f %s %d %d %d %d %d %d 0x%s",
@@ -226,7 +221,7 @@ public class CanSocketJ1939 extends CanSocket {
 		int i = 0;
 
 		Iterator<Filter> it = filter.iterator();
-		
+
 		while (it.hasNext()) {
 			Filter filt = it.next();
 			if (filt.srcAddr >= 0xFF) {
@@ -242,7 +237,7 @@ public class CanSocketJ1939 extends CanSocket {
 			pgns[i] = filt.pgn;
 			i++;
 		}
-		
+
 		setJ1939Filter(srcNames, srcAddrs, pgns);
 	}
 }
