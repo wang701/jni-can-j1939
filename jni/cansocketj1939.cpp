@@ -40,7 +40,7 @@ jfieldID sockID;
 jfieldID ifIndID;
 
 static void throwException(JNIEnv *env, const std::string& exception_name,
-			   const std::string& msg)
+	const std::string& msg)
 {
 	const jclass exception = env->FindClass(exception_name.c_str());
 	if (exception == NULL) {
@@ -75,13 +75,13 @@ static void throwIllegalArgumentException(JNIEnv *env, const std::string& messag
 
 static void throwOutOfMemoryError(JNIEnv *env, const std::string& message)
 {
-    	throwException(env, "java/lang/OutOfMemoryError", message);
+	throwException(env, "java/lang/OutOfMemoryError", message);
 }
 
 JNIEXPORT jint JNICALL Java_org_isoblue_can_CanSocketJ1939_fetch
 (JNIEnv *env, jclass cls, jstring param)
 {
-    	const char *str = env->GetStringUTFChars(param, NULL);
+    const char *str = env->GetStringUTFChars(param, NULL);
 	if (strcmp(str, "CAN_J1939") == 0) {
 		env->ReleaseStringUTFChars(param, str);
 		return CAN_J1939;
@@ -134,7 +134,7 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_initIds
 	ifIndID = env->GetFieldID(cls, "mIfIndex", "I");
 }
 
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_setJ1939Filter
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_setFilter
 (JNIEnv *env, jobject obj, jlongArray names, jintArray addrs, jintArray pgns)
 {
 	int i;
@@ -157,35 +157,41 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_setJ1939Filter
 	jlong *name = env->GetLongArrayElements(names, NULL);
 	jint *addr = env->GetIntArrayElements(addrs, NULL);
 	jint *pgn = env->GetIntArrayElements(pgns, NULL);
-	
+
 	for (i = 0; i < len; i++) {
 		if (name[i] >= 0) {
 			filt[i].name = name[i];
-			filt[i].name_mask = ~0ULL;
+			filt[i].name_mask = ~0;
+		} else {
+			filt[i].name_mask = 0;
 		}
 	}
 
 	for (i = 0; i < len; i++) {
-		if (addr[i] >= 0) {	
+		if (addr[i] >= 0) {
 			filt[i].addr = addr[i];
 			filt[i].addr_mask = ~0;
+		} else {
+			filt[i].addr_mask = 0;
 		}
 	}
 
 	for (i = 0; i < len; i++) {
-		if (pgn[i] >= 0) {	
+		if (pgn[i] >= 0) {
 			filt[i].pgn = pgn[i];
 			filt[i].pgn_mask = ~0;
+		} else {
+			filt[i].pgn_mask = 0;
 		}
 	}
-	
+
 	env->ReleaseLongArrayElements(names, name, 0);
 	env->ReleaseIntArrayElements(addrs, addr, 0);
 	env->ReleaseIntArrayElements(pgns, pgn, 0);
 
 	/* apply filters to socket */
 	if (setsockopt(sockfd, SOL_CAN_J1939, SO_J1939_FILTER, filt,
-		 len * sizeof(struct j1939_filter)) == -1) {
+		len * sizeof(struct j1939_filter)) == -1) {
 		throwIOExceptionErrno(env, errno);
 	}
 

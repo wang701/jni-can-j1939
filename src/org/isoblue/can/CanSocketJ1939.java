@@ -25,13 +25,14 @@ public class CanSocketJ1939 extends CanSocket {
 
 	private static native int fetch(final String param);
 	private static native void initIds();
-	private native void setJ1939Filter(long[] names,
-		int[] addrs, int[] pgns);
+
+	private native void setFilter(long[] names, int[] addrs, int[] pgns);
 	private native J1939Message recvmsg();
 	private native void bindToSocket() throws IOException;
 	private native void sendmsg(J1939Message msg) throws IOException;
 	private native void bindToAddr(final int addr) throws IOException;
 	private native void bindToName(final long name) throws IOException;
+
 	private static final int CAN_J1939 = fetch("CAN_J1939");
 	private static final int SOCK_DGRAM = fetch("SOCK_DGRAM");
 	private static final int SOL_SOCKET = fetch("SOL_SOCKET");
@@ -137,9 +138,30 @@ public class CanSocketJ1939 extends CanSocket {
 
 		public String toString() {
 
+			String nameStr;
+			String addrStr;
+			String pgnStr;
+
+			if (srcName < 0) {
+				nameStr = "N/A";
+			} else {
+				nameStr = String.valueOf(this.srcName);
+			}
+
+			if (srcAddr < 0) {
+				addrStr = "N/A";
+			} else {
+				addrStr = String.valueOf(this.srcAddr);
+			}
+
+			if (pgn < 0) {
+				pgnStr = "N/A";
+			} else {
+				pgnStr = String.valueOf(this.pgn);
+			}
+
 			String filterStr = String.format(
-				"Source Name: %d, Source Address: %d, PGN: %d",
-				srcName, srcAddr, pgn);
+				"Source Name: %s, Source Address: %s, PGN: %s", nameStr, addrStr, pgnStr);
 
 			return filterStr;
 		}
@@ -192,10 +214,8 @@ public class CanSocketJ1939 extends CanSocket {
 		}
 
 		public String toString() {
-			String msgStr = String.format("%.4f %s %d %d %d %d %d %d 0x%s",
-				timestamp, ifName, srcName,
-				srcAddr, dstAddr,
-				pgn, len, priority,
+			String msgStr = String.format("%.4f %s %d %d %d %d %d %d %d 0x%s",
+				timestamp, ifName, srcName, srcAddr, dstName, dstAddr, pgn, len, priority,
 				byteArrayToHex(data));
 
 			return msgStr;
@@ -215,6 +235,7 @@ public class CanSocketJ1939 extends CanSocket {
 	public void setJ1939Filter(Collection<Filter> filter)
 		throws IOException, IllegalArgumentException {
 
+		System.out.printf("filter_size: %d\n", filter.size());
 		long[] srcNames = new long[filter.size()];
 		int[] srcAddrs = new int[filter.size()];
 		int[] pgns = new int[filter.size()];
@@ -224,6 +245,7 @@ public class CanSocketJ1939 extends CanSocket {
 
 		while (it.hasNext()) {
 			Filter filt = it.next();
+
 			if (filt.srcAddr >= 0xFF) {
 				throw new IllegalArgumentException("srcAddr: "
 					+ filt.srcAddr + " out of range");
@@ -238,7 +260,7 @@ public class CanSocketJ1939 extends CanSocket {
 			i++;
 		}
 
-		setJ1939Filter(srcNames, srcAddrs, pgns);
+		setFilter(srcNames, srcAddrs, pgns);
 	}
 }
 

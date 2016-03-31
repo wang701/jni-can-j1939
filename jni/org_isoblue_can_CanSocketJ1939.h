@@ -25,10 +25,10 @@ JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_initIds
 
 /*
  * Class:     org_isoblue_can_CanSocketJ1939
- * Method:    setJ1939Filter
+ * Method:    setFilter
  * Signature: ([J[I[I)V
  */
-JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_setJ1939Filter
+JNIEXPORT void JNICALL Java_org_isoblue_can_CanSocketJ1939_setFilter
   (JNIEnv *, jobject, jlongArray, jintArray, jintArray);
 
 /*
